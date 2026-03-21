@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veo 3.1 Prompt Optimizer — Paltrend</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #D4A843;
+    --gold-light: #F0C96A;
+    --gold-dark: #A07825;
+    --ink: #0A0A0A;
+    --ink-2: #111111;
+    --ink-3: #1A1A1A;
+    --surface: #141414;
+    --surface-2: #1E1E1E;
+    --surface-3: #252525;
+    --muted: #888;
+    --text: #F0EDE6;
+    --text-2: #C5C0B4;
+    --accent: #FF6B35;
+    --teal: #2ECFA8;
+    --border: rgba(212,168,67,0.2);
+    --border-soft: rgba(255,255,255,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--ink);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(212,168,67,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,168,67,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* TOP GLOW */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(212,168,67,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* ── HEADER ── */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 0 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+
+  .brand {
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .brand-mark {
+    width: 36px; height: 36px;
+    background: var(--gold);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+
+  .brand-name {
+    font-size: 18px; font-weight: 800;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--text);
+  }
+
+  .brand-name span { color: var(--gold); }
+
+  .tiktok-link {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--border-soft);
+    padding: 6px 14px;
+    border-radius: 20px;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .tiktok-link:hover {
+    color: var(--gold);
+    border-color: var(--border);
+    background: rgba(212,168,67,0.05);
+  }
+
+  .tiktok-link::before {
+    content: '↗';
+    font-size: 10px;
+  }
+
+  /* ── HERO ── */
+  .hero { text-align: center; margin-bottom: 48px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gold);
+    background: rgba(212,168,67,0.08);
+    border: 1px solid var(--border);
+    padding: 5px 14px; border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  .badge-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--gold);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.7;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* ── MAIN CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .card-title::after {
+    content: ''; flex: 1;
+    height: 1px; background: var(--border);
+  }
+
+  textarea {
+    width: 100%;
+    background: var(--ink-3);
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    padding: 16px;
+    resize: vertical;
+    min-height: 100px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  textarea:focus { border-color: var(--border); }
+  textarea::placeholder { color: var(--muted); }
+
+  /* ── PARAM GRID ── */
+  .param-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .param-group label {
+    display: block;
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  select, input[type="text"] {
+    width: 100%;
+    background: var(--ink-3);
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    padding: 10px 12px;
+    outline: none;
+    appearance: none;
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+
+  select:focus, input[type="text"]:focus { border-color: var(--border); }
+
+  .select-wrap { position: relative; }
+
+  .select-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+    font-size: 11px;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex; gap: 12px; margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    flex: 1;
+    background: var(--gold);
+    color: var(--ink);
+    border: none;
+    border-radius: 10px;
+    padding: 14px 28px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    min-width: 160px;
+  }
+
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary.loading { opacity: 0.7; cursor: wait; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-2);
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-secondary:hover { border-color: var(--border); color: var(--text); }
+
+  /* ── OUTPUT ── */
+  #output-section { display: none; }
+  #output-section.visible { display: block; }
+
+  .output-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .output-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-soft);
+    background: var(--surface-2);
+  }
+
+  .output-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .copy-btn {
+    background: transparent;
+    border: 1px solid var(--border-soft);
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { color: var(--gold); border-color: var(--border); }
+  .copy-btn.copied { color: var(--teal); border-color: rgba(46,207,168,0.3); }
+
+  .output-body {
+    padding: 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 100px;
+  }
+
+  /* JSON display */
+  .json-key { color: var(--gold-light); }
+  .json-string { color: var(--teal); }
+  .json-number { color: var(--accent); }
+  .json-bool { color: #B57BFF; }
+
+  /* ── JSON BLOCK ── */
+  .json-card {
+    background: var(--ink-2);
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .json-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-soft);
+    background: var(--surface-3);
+  }
+
+  .json-body {
+    padding: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    line-height: 1.8;
+    overflow-x: auto;
+    color: var(--text-2);
+    min-height: 60px;
+  }
+
+  /* ── LOADING ── */
+  .loading-dots {
+    display: none; align-items: center; gap: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    padding: 20px 24px;
+  }
+
+  .loading-dots.visible { display: flex; }
+
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gold);
+    animation: bounce 1.2s infinite;
+  }
+
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0.5); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  /* ── TAGS ── */
+  .tag-row {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;
+  }
+
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-soft);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.5px;
+  }
+
+  .tag:hover {
+    border-color: var(--border);
+    color: var(--gold);
+    background: rgba(212,168,67,0.05);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border-soft);
+    padding-top: 28px;
+    margin-top: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-brand {
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    color: var(--muted);
+  }
+
+  .footer-brand strong { color: var(--gold); }
+
+  .footer-links { display: flex; gap: 16px; }
+
+  .footer-link {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-link:hover { color: var(--gold); }
+
+  /* ── ERROR ── */
+  .error-msg {
+    background: rgba(255,107,53,0.08);
+    border: 1px solid rgba(255,107,53,0.25);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    display: none;
+    margin-top: 12px;
+  }
+
+  .error-msg.visible { display: block; }
+
+  /* ── DIVIDER ── */
+  .section-gap { margin-top: 32px; }
+
+  /* SPINNER */
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(10,10,10,0.3);
+    border-top-color: var(--ink);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+
+  .btn-primary.loading .spinner { display: block; }
+  .btn-primary.loading .btn-text { opacity: 0.7; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="brand-mark">P</div>
+      <div class="brand-name">PAL<span>TREND</span></div>
+    </div>
+    <a href="https://tiktok.com/paltrend" target="_blank" class="tiktok-link">tiktok.com/paltrend</a>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="badge">
+      <div class="badge-dot"></div>
+      Powered by Claude AI
+    </div>
+    <h1>Veo 3.1 <em>Prompt</em><br>Optimizer</h1>
+    <p class="hero-sub">Transform your raw idea into a cinematic, production-ready Veo 3.1 text-to-video prompt — with full JSON output.</p>
+  </div>
+
+  <!-- INPUT CARD -->
+  <div class="card">
+    <div class="card-title">Your Raw Idea</div>
+    <textarea id="raw-input" placeholder="e.g. A woman walking through a rainy Lagos market at night, neon reflections on wet ground, slow motion..." rows="4"></textarea>
+
+    <div class="tag-row" id="example-tags">
+      <div class="tag" onclick="fillExample('aerial drone shot over Victoria Island Lagos at sunset, golden hour, 4K cinematic')">Lagos sunset drone</div>
+      <div class="tag" onclick="fillExample('close up of a woman applying shea butter, melanin skin glistening, warm studio light, luxury feel')">Luxury beauty</div>
+      <div class="tag" onclick="fillExample('two friends laughing in a busy Afrobeats concert, crowd energy, motion blur, vibrant colors')">Concert energy</div>
+      <div class="tag" onclick="fillExample('futuristic African city 2080, Afrofuturism architecture, floating markets, golden light')">Afrofuturism</div>
+      <div class="tag" onclick="fillExample('chef plating jollof rice in slow motion, steam rising, cinematic depth of field, food photography style')">Cinematic food</div>
+    </div>
+
+    <div class="section-gap"></div>
+    <div class="card-title">Parameters</div>
+
+    <div class="param-grid">
+      <div class="param-group">
+        <label>Shot Style</label>
+        <div class="select-wrap">
+          <select id="shot-style">
+            <option value="cinematic">Cinematic</option>
+            <option value="documentary">Documentary</option>
+            <option value="music video">Music Video</option>
+            <option value="commercial">Commercial / Ad</option>
+            <option value="social media">Social Media (Vertical)</option>
+            <option value="fashion film">Fashion Film</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="param-group">
+        <label>Camera Movement</label>
+        <div class="select-wrap">
+          <select id="camera-move">
+            <option value="slow push in">Slow Push In</option>
+            <option value="tracking shot">Tracking Shot</option>
+            <option value="aerial drone">Aerial Drone</option>
+            <option value="handheld">Handheld</option>
+            <option value="static wide">Static Wide</option>
+            <option value="dolly zoom">Dolly Zoom</option>
+            <option value="360 orbit">360° Orbit</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="param-group">
+        <label>Mood / Tone</label>
+        <div class="select-wrap">
+          <select id="mood">
+            <option value="warm and luxurious">Warm & Luxurious</option>
+            <option value="moody and dramatic">Moody & Dramatic</option>
+            <option value="energetic and vibrant">Energetic & Vibrant</option>
+            <option value="calm and ethereal">Calm & Ethereal</option>
+            <option value="gritty and raw">Gritty & Raw</option>
+            <option value="playful and bright">Playful & Bright</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="param-group">
+        <label>Aspect Ratio</label>
+        <div class="select-wrap">
+          <select id="aspect">
+            <option value="16:9 widescreen">16:9 Widescreen</option>
+            <option value="9:16 vertical">9:16 Vertical (TikTok)</option>
+            <option value="1:1 square">1:1 Square</option>
+            <option value="2.39:1 anamorphic">2.39:1 Anamorphic</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="param-group">
+        <label>Duration</label>
+        <div class="select-wrap">
+          <select id="duration">
+            <option value="5 seconds">5 seconds</option>
+            <option value="8 seconds">8 seconds</option>
+            <option value="15 seconds">15 seconds</option>
+            <option value="30 seconds">30 seconds</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="param-group">
+        <label>Cultural Context</label>
+        <div class="select-wrap">
+          <select id="culture">
+            <option value="West African / Nigerian">West African / Nigerian</option>
+            <option value="Pan-African">Pan-African</option>
+            <option value="Afrofuturism">Afrofuturism</option>
+            <option value="neutral / global">Neutral / Global</option>
+            <option value="East African">East African</option>
+            <option value="African diaspora">African Diaspora</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-primary" id="optimize-btn" onclick="optimizePrompt()">
+        <div class="spinner"></div>
+        <span class="btn-text">✦ Optimize Prompt</span>
+      </button>
+      <button class="btn-secondary" onclick="clearAll()">Clear</button>
+    </div>
+
+    <div class="error-msg" id="error-msg"></div>
+  </div>
+
+  <!-- OUTPUT SECTION -->
+  <div id="output-section">
+
+    <!-- OPTIMIZED PROMPT -->
+    <div class="output-card">
+      <div class="output-header">
+        <span class="output-label">✦ Optimized Veo 3.1 Prompt</span>
+        <button class="copy-btn" id="copy-prompt-btn" onclick="copyText('prompt-output', 'copy-prompt-btn')">Copy</button>
+      </div>
+      <div class="loading-dots" id="prompt-loading">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <span>Crafting cinematic prompt…</span>
+      </div>
+      <div class="output-body" id="prompt-output"></div>
+    </div>
+
+    <!-- NEGATIVE PROMPT -->
+    <div class="output-card">
+      <div class="output-header">
+        <span class="output-label">✗ Negative Prompt</span>
+        <button class="copy-btn" id="copy-neg-btn" onclick="copyText('negative-output', 'copy-neg-btn')">Copy</button>
+      </div>
+      <div class="output-body" id="negative-output"></div>
+    </div>
+
+    <!-- JSON OUTPUT -->
+    <div class="json-card">
+      <div class="json-header">
+        <span class="output-label" style="color: var(--teal);">{ } Full JSON Output</span>
+        <button class="copy-btn" id="copy-json-btn" onclick="copyJSON()">Copy JSON</button>
+      </div>
+      <div class="json-body" id="json-output"></div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">
+      Crafted by <strong>A.JAMES</strong> · Paltrend AI Studio · Nigeria
+    </div>
+    <div class="footer-links">
+      <a href="https://tiktok.com/paltrend" target="_blank" class="footer-link">TikTok</a>
+      <a href="mailto:paltrend6@gmail.com" class="footer-link">Email</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+let lastJSON = null;
+
+function fillExample(text) {
+  document.getElementById('raw-input').value = text;
+}
+
+function clearAll() {
+  document.getElementById('raw-input').value = '';
+  document.getElementById('output-section').classList.remove('visible');
+  document.getElementById('error-msg').classList.remove('visible');
+  lastJSON = null;
+}
+
+function setLoading(on) {
+  const btn = document.getElementById('optimize-btn');
+  btn.classList.toggle('loading', on);
+  btn.disabled = on;
+}
+
+async function optimizePrompt() {
+  const rawIdea = document.getElementById('raw-input').value.trim();
+  if (!rawIdea) {
+    showError('Please enter your video idea first.');
+    return;
+  }
+
+  const shotStyle = document.getElementById('shot-style').value;
+  const cameraMove = document.getElementById('camera-move').value;
+  const mood = document.getElementById('mood').value;
+  const aspect = document.getElementById('aspect').value;
+  const duration = document.getElementById('duration').value;
+  const culture = document.getElementById('culture').value;
+
+  setLoading(true);
+  hideError();
+
+  document.getElementById('output-section').classList.add('visible');
+  document.getElementById('prompt-loading').classList.add('visible');
+  document.getElementById('prompt-output').textContent = '';
+  document.getElementById('negative-output').textContent = '';
+  document.getElementById('json-output').textContent = '';
+
+  const systemPrompt = `You are a world-class Veo 3.1 text-to-video prompt engineer for the Paltrend AI content studio in Nigeria. You specialize in cinematic, culturally authentic African content with luxury production aesthetics. Your prompts win international video AI competitions.
+
+Always respond ONLY with a valid JSON object — no markdown, no backticks, no explanation. The JSON must follow this exact structure:
+{
+  "optimized_prompt": "Full cinematic Veo 3.1 text-to-video prompt (150-250 words)",
+  "negative_prompt": "comma-separated negative terms to avoid",
+  "technical_specs": {
+    "aspect_ratio": "...",
+    "duration": "...",
+    "frame_rate": "...",
+    "resolution": "..."
+  },
+  "camera": {
+    "shot_type": "...",
+    "movement": "...",
+    "lens": "...",
+    "depth_of_field": "..."
+  },
+  "lighting": {
+    "primary": "...",
+    "secondary": "...",
+    "color_temperature": "..."
+  },
+  "mood_keywords": ["...", "...", "..."],
+  "style_tags": ["...", "...", "..."],
+  "paltrend_notes": "Brief creative note from the Paltrend studio perspective"
+}`;
+
+  const userMsg = `Optimize this video idea for Veo 3.1:
+
+RAW IDEA: "${rawIdea}"
+SHOT STYLE: ${shotStyle}
+CAMERA MOVEMENT: ${cameraMove}
+MOOD/TONE: ${mood}
+ASPECT RATIO: ${aspect}
+DURATION: ${duration}
+CULTURAL CONTEXT: ${culture}
+
+Produce a world-class Veo 3.1 prompt. Emphasize melanin-rich skin tones, authentic African aesthetics, cinematic quality, and emotional storytelling.`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userMsg }]
+      })
+    });
+
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+    const data = await res.json();
+
+    const raw = data.content?.find(b => b.type === 'text')?.text || '';
+    let cleaned = raw.replace(/```json|```/g, '').trim();
+
+    // Find first { to last } to extract JSON robustly
+    const start = cleaned.indexOf('{');
+    const end = cleaned.lastIndexOf('}');
+    if (start !== -1 && end !== -1) cleaned = cleaned.slice(start, end + 1);
+
+    const parsed = JSON.parse(cleaned);
+    lastJSON = parsed;
+
+    document.getElementById('prompt-loading').classList.remove('visible');
+    document.getElementById('prompt-output').textContent = parsed.optimized_prompt || 'No prompt generated.';
+    document.getElementById('negative-output').textContent = parsed.negative_prompt || '';
+
+    renderJSON(parsed);
+
+  } catch (err) {
+    document.getElementById('prompt-loading').classList.remove('visible');
+    showError('Error: ' + (err.message || 'Something went wrong. Please try again.'));
+    document.getElementById('output-section').classList.remove('visible');
+  } finally {
+    setLoading(false);
+  }
+}
+
+function renderJSON(obj) {
+  const container = document.getElementById('json-output');
+  container.innerHTML = syntaxHighlight(JSON.stringify(obj, null, 2));
+}
+
+function syntaxHighlight(json) {
+  return json
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(m) {
+      let cls = 'json-number';
+      if (/^"/.test(m)) cls = /:$/.test(m) ? 'json-key' : 'json-string';
+      else if (/true|false/.test(m)) cls = 'json-bool';
+      return `<span class="${cls}">${m}</span>`;
+    });
+}
+
+function copyText(id, btnId) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById(btnId);
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyJSON() {
+  if (!lastJSON) return;
+  navigator.clipboard.writeText(JSON.stringify(lastJSON, null, 2)).then(() => {
+    const btn = document.getElementById('copy-json-btn');
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy JSON'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+
+function hideError() {
+  document.getElementById('error-msg').classList.remove('visible');
+}
+</script>
+</body>
+</html>
