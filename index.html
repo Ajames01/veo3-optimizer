@@ -35,7 +35,6 @@
     overflow-x: hidden;
   }
 
-  /* GRID TEXTURE */
   body::before {
     content: '';
     position: fixed;
@@ -48,7 +47,6 @@
     z-index: 0;
   }
 
-  /* TOP GLOW */
   body::after {
     content: '';
     position: fixed;
@@ -62,7 +60,6 @@
 
   .wrapper { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
 
-  /* ── HEADER ── */
   header {
     display: flex;
     justify-content: space-between;
@@ -72,9 +69,7 @@
     margin-bottom: 40px;
   }
 
-  .brand {
-    display: flex; align-items: center; gap: 12px;
-  }
+  .brand { display: flex; align-items: center; gap: 12px; }
 
   .brand-mark {
     width: 36px; height: 36px;
@@ -82,7 +77,6 @@
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     display: flex; align-items: center; justify-content: center;
     font-size: 13px; font-weight: 800; color: var(--ink);
-    letter-spacing: -0.5px;
   }
 
   .brand-name {
@@ -105,18 +99,9 @@
     display: flex; align-items: center; gap: 6px;
   }
 
-  .tiktok-link:hover {
-    color: var(--gold);
-    border-color: var(--border);
-    background: rgba(212,168,67,0.05);
-  }
+  .tiktok-link:hover { color: var(--gold); border-color: var(--border); background: rgba(212,168,67,0.05); }
+  .tiktok-link::before { content: '↗'; font-size: 10px; }
 
-  .tiktok-link::before {
-    content: '↗';
-    font-size: 10px;
-  }
-
-  /* ── HERO ── */
   .hero { text-align: center; margin-bottom: 48px; }
 
   .badge {
@@ -149,10 +134,7 @@
     margin-bottom: 16px;
   }
 
-  h1 em {
-    font-style: normal;
-    color: var(--gold);
-  }
+  h1 em { font-style: normal; color: var(--gold); }
 
   .hero-sub {
     font-family: 'Space Mono', monospace;
@@ -163,7 +145,6 @@
     margin: 0 auto;
   }
 
-  /* ── MAIN CARD ── */
   .card {
     background: var(--surface);
     border: 1px solid var(--border-soft);
@@ -182,10 +163,7 @@
     display: flex; align-items: center; gap: 10px;
   }
 
-  .card-title::after {
-    content: ''; flex: 1;
-    height: 1px; background: var(--border);
-  }
+  .card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
   textarea {
     width: 100%;
@@ -206,7 +184,6 @@
   textarea:focus { border-color: var(--border); }
   textarea::placeholder { color: var(--muted); }
 
-  /* ── PARAM GRID ── */
   .param-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -224,7 +201,7 @@
     margin-bottom: 8px;
   }
 
-  select, input[type="text"] {
+  select {
     width: 100%;
     background: var(--ink-3);
     border: 1px solid var(--border-soft);
@@ -239,7 +216,7 @@
     cursor: pointer;
   }
 
-  select:focus, input[type="text"]:focus { border-color: var(--border); }
+  select:focus { border-color: var(--border); }
 
   .select-wrap { position: relative; }
 
@@ -253,11 +230,7 @@
     font-size: 11px;
   }
 
-  /* ── BUTTONS ── */
-  .btn-row {
-    display: flex; gap: 12px; margin-top: 24px;
-    flex-wrap: wrap;
-  }
+  .btn-row { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
 
   .btn-primary {
     flex: 1;
@@ -278,7 +251,7 @@
 
   .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
   .btn-primary:active { transform: translateY(0); }
-  .btn-primary.loading { opacity: 0.7; cursor: wait; }
+  .btn-primary:disabled { opacity: 0.7; cursor: wait; }
 
   .btn-secondary {
     background: transparent;
@@ -295,7 +268,6 @@
 
   .btn-secondary:hover { border-color: var(--border); color: var(--text); }
 
-  /* ── OUTPUT ── */
   #output-section { display: none; }
   #output-section.visible { display: block; }
 
@@ -349,16 +321,9 @@
     color: var(--text);
     white-space: pre-wrap;
     word-break: break-word;
-    min-height: 100px;
+    min-height: 60px;
   }
 
-  /* JSON display */
-  .json-key { color: var(--gold-light); }
-  .json-string { color: var(--teal); }
-  .json-number { color: var(--accent); }
-  .json-bool { color: #B57BFF; }
-
-  /* ── JSON BLOCK ── */
   .json-card {
     background: var(--ink-2);
     border: 1px solid var(--border-soft);
@@ -386,7 +351,6 @@
     min-height: 60px;
   }
 
-  /* ── LOADING ── */
   .loading-dots {
     display: none; align-items: center; gap: 6px;
     font-family: 'Space Mono', monospace;
@@ -411,10 +375,7 @@
     40% { transform: scale(1); opacity: 1; }
   }
 
-  /* ── TAGS ── */
-  .tag-row {
-    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;
-  }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 
   .tag {
     font-family: 'Space Mono', monospace;
@@ -428,47 +389,13 @@
     letter-spacing: 0.5px;
   }
 
-  .tag:hover {
-    border-color: var(--border);
-    color: var(--gold);
-    background: rgba(212,168,67,0.05);
-  }
+  .tag:hover { border-color: var(--border); color: var(--gold); background: rgba(212,168,67,0.05); }
 
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border-soft);
-    padding-top: 28px;
-    margin-top: 48px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
+  .json-key { color: var(--gold-light); }
+  .json-string { color: var(--teal); }
+  .json-number { color: var(--accent); }
+  .json-bool { color: #B57BFF; }
 
-  .footer-brand {
-    font-size: 11px;
-    font-family: 'Space Mono', monospace;
-    color: var(--muted);
-  }
-
-  .footer-brand strong { color: var(--gold); }
-
-  .footer-links { display: flex; gap: 16px; }
-
-  .footer-link {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--muted);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-
-  .footer-link:hover { color: var(--gold); }
-
-  /* ── ERROR ── */
   .error-msg {
     background: rgba(255,107,53,0.08);
     border: 1px solid rgba(255,107,53,0.25);
@@ -483,10 +410,8 @@
 
   .error-msg.visible { display: block; }
 
-  /* ── DIVIDER ── */
   .section-gap { margin-top: 32px; }
 
-  /* SPINNER */
   .spinner {
     width: 14px; height: 14px;
     border: 2px solid rgba(10,10,10,0.3);
@@ -497,15 +422,40 @@
   }
 
   .btn-primary.loading .spinner { display: block; }
-  .btn-primary.loading .btn-text { opacity: 0.7; }
 
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  footer {
+    border-top: 1px solid var(--border-soft);
+    padding-top: 28px;
+    margin-top: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-brand { font-size: 11px; font-family: 'Space Mono', monospace; color: var(--muted); }
+  .footer-brand strong { color: var(--gold); }
+  .footer-links { display: flex; gap: 16px; }
+
+  .footer-link {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-link:hover { color: var(--gold); }
 </style>
 </head>
 <body>
 <div class="wrapper">
 
-  <!-- HEADER -->
   <header>
     <div class="brand">
       <div class="brand-mark">P</div>
@@ -514,22 +464,20 @@
     <a href="https://tiktok.com/paltrend" target="_blank" class="tiktok-link">tiktok.com/paltrend</a>
   </header>
 
-  <!-- HERO -->
   <div class="hero">
     <div class="badge">
       <div class="badge-dot"></div>
-      Powered by Claude AI
+      Powered by Gemini AI · Free
     </div>
     <h1>Veo 3.1 <em>Prompt</em><br>Optimizer</h1>
     <p class="hero-sub">Transform your raw idea into a cinematic, production-ready Veo 3.1 text-to-video prompt — with full JSON output.</p>
   </div>
 
-  <!-- INPUT CARD -->
   <div class="card">
     <div class="card-title">Your Raw Idea</div>
     <textarea id="raw-input" placeholder="e.g. A woman walking through a rainy Lagos market at night, neon reflections on wet ground, slow motion..." rows="4"></textarea>
 
-    <div class="tag-row" id="example-tags">
+    <div class="tag-row">
       <div class="tag" onclick="fillExample('aerial drone shot over Victoria Island Lagos at sunset, golden hour, 4K cinematic')">Lagos sunset drone</div>
       <div class="tag" onclick="fillExample('close up of a woman applying shea butter, melanin skin glistening, warm studio light, luxury feel')">Luxury beauty</div>
       <div class="tag" onclick="fillExample('two friends laughing in a busy Afrobeats concert, crowd energy, motion blur, vibrant colors')">Concert energy</div>
@@ -634,10 +582,7 @@
     <div class="error-msg" id="error-msg"></div>
   </div>
 
-  <!-- OUTPUT SECTION -->
   <div id="output-section">
-
-    <!-- OPTIMIZED PROMPT -->
     <div class="output-card">
       <div class="output-header">
         <span class="output-label">✦ Optimized Veo 3.1 Prompt</span>
@@ -650,7 +595,6 @@
       <div class="output-body" id="prompt-output"></div>
     </div>
 
-    <!-- NEGATIVE PROMPT -->
     <div class="output-card">
       <div class="output-header">
         <span class="output-label">✗ Negative Prompt</span>
@@ -659,7 +603,6 @@
       <div class="output-body" id="negative-output"></div>
     </div>
 
-    <!-- JSON OUTPUT -->
     <div class="json-card">
       <div class="json-header">
         <span class="output-label" style="color: var(--teal);">{ } Full JSON Output</span>
@@ -667,10 +610,8 @@
       </div>
       <div class="json-body" id="json-output"></div>
     </div>
-
   </div>
 
-  <!-- FOOTER -->
   <footer>
     <div class="footer-brand">
       Crafted by <strong>A.JAMES</strong> · Paltrend AI Studio · Nigeria
@@ -684,6 +625,9 @@
 </div>
 
 <script>
+const GEMINI_API_KEY = "AIzaSyDBYKAaAeN1VuSck1I98IWDjB4vsdmWZI0";
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+
 let lastJSON = null;
 
 function fillExample(text) {
@@ -705,10 +649,7 @@ function setLoading(on) {
 
 async function optimizePrompt() {
   const rawIdea = document.getElementById('raw-input').value.trim();
-  if (!rawIdea) {
-    showError('Please enter your video idea first.');
-    return;
-  }
+  if (!rawIdea) { showError('Please enter your video idea first.'); return; }
 
   const shotStyle = document.getElementById('shot-style').value;
   const cameraMove = document.getElementById('camera-move').value;
@@ -719,16 +660,15 @@ async function optimizePrompt() {
 
   setLoading(true);
   hideError();
-
   document.getElementById('output-section').classList.add('visible');
   document.getElementById('prompt-loading').classList.add('visible');
   document.getElementById('prompt-output').textContent = '';
   document.getElementById('negative-output').textContent = '';
   document.getElementById('json-output').textContent = '';
 
-  const systemPrompt = `You are a world-class Veo 3.1 text-to-video prompt engineer for the Paltrend AI content studio in Nigeria. You specialize in cinematic, culturally authentic African content with luxury production aesthetics. Your prompts win international video AI competitions.
+  const prompt = `You are a world-class Veo 3.1 text-to-video prompt engineer for the Paltrend AI content studio in Nigeria. You specialize in cinematic, culturally authentic African content with luxury production aesthetics.
 
-Always respond ONLY with a valid JSON object — no markdown, no backticks, no explanation. The JSON must follow this exact structure:
+Respond ONLY with a valid JSON object — no markdown, no backticks, no explanation. Use this exact structure:
 {
   "optimized_prompt": "Full cinematic Veo 3.1 text-to-video prompt (150-250 words)",
   "negative_prompt": "comma-separated negative terms to avoid",
@@ -752,9 +692,7 @@ Always respond ONLY with a valid JSON object — no markdown, no backticks, no e
   "mood_keywords": ["...", "...", "..."],
   "style_tags": ["...", "...", "..."],
   "paltrend_notes": "Brief creative note from the Paltrend studio perspective"
-}`;
-
-  const userMsg = `Optimize this video idea for Veo 3.1:
+}
 
 RAW IDEA: "${rawIdea}"
 SHOT STYLE: ${shotStyle}
@@ -764,27 +702,26 @@ ASPECT RATIO: ${aspect}
 DURATION: ${duration}
 CULTURAL CONTEXT: ${culture}
 
-Produce a world-class Veo 3.1 prompt. Emphasize melanin-rich skin tones, authentic African aesthetics, cinematic quality, and emotional storytelling.`;
+Emphasize melanin-rich skin tones, authentic African aesthetics, cinematic quality, and emotional storytelling.`;
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch(GEMINI_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userMsg }]
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.8, maxOutputTokens: 1200 }
       })
     });
 
-    if (!res.ok) throw new Error(`API error ${res.status}`);
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err?.error?.message || `API error ${res.status}`);
+    }
+
     const data = await res.json();
-
-    const raw = data.content?.find(b => b.type === 'text')?.text || '';
+    let raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
     let cleaned = raw.replace(/```json|```/g, '').trim();
-
-    // Find first { to last } to extract JSON robustly
     const start = cleaned.indexOf('{');
     const end = cleaned.lastIndexOf('}');
     if (start !== -1 && end !== -1) cleaned = cleaned.slice(start, end + 1);
@@ -795,7 +732,6 @@ Produce a world-class Veo 3.1 prompt. Emphasize melanin-rich skin tones, authent
     document.getElementById('prompt-loading').classList.remove('visible');
     document.getElementById('prompt-output').textContent = parsed.optimized_prompt || 'No prompt generated.';
     document.getElementById('negative-output').textContent = parsed.negative_prompt || '';
-
     renderJSON(parsed);
 
   } catch (err) {
@@ -808,8 +744,7 @@ Produce a world-class Veo 3.1 prompt. Emphasize melanin-rich skin tones, authent
 }
 
 function renderJSON(obj) {
-  const container = document.getElementById('json-output');
-  container.innerHTML = syntaxHighlight(JSON.stringify(obj, null, 2));
+  document.getElementById('json-output').innerHTML = syntaxHighlight(JSON.stringify(obj, null, 2));
 }
 
 function syntaxHighlight(json) {
