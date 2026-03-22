@@ -4,552 +4,200 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Veo 3.1 Prompt Optimizer | Paltrend</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --gold: #D4A853;
-    --gold-light: #F0C97A;
-    --gold-dark: #A07830;
-    --black: #080808;
-    --dark: #111111;
-    --dark2: #1A1A1A;
-    --dark3: #222222;
-    --gray: #888888;
-    --light: #E8E0D0;
-    --white: #F5F0E8;
-    --accent: #C8622A;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--black);
-    color: var(--light);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Animated grain overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.4;
-  }
-
-  /* Header */
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 40px;
-    border-bottom: 1px solid rgba(212, 168, 83, 0.2);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(8,8,8,0.92);
-    backdrop-filter: blur(12px);
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-  }
-
-  .logo-mark {
-    width: 38px;
-    height: 38px;
-    background: linear-gradient(135deg, var(--gold), var(--accent));
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    color: var(--black);
-    letter-spacing: 1px;
-    box-shadow: 0 0 20px rgba(212,168,83,0.3);
-  }
-
-  .logo-text {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 3px;
-    color: var(--gold);
-  }
-
-  .logo-sub {
-    font-size: 10px;
-    color: var(--gray);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-weight: 300;
-    display: block;
-    margin-top: -4px;
-  }
-
-  .header-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
-    border: 1px solid rgba(212,168,83,0.3);
-    border-radius: 100px;
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--gold);
-    text-transform: uppercase;
-  }
-
-  .badge-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--gold);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.8); }
-  }
-
-  /* Hero */
-  .hero {
-    text-align: center;
-    padding: 70px 40px 50px;
-    position: relative;
-  }
-
-  .hero::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 600px;
-    height: 300px;
-    background: radial-gradient(ellipse at center, rgba(212,168,83,0.08) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .hero-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 20px;
-    font-weight: 500;
-  }
-
-  .hero-eyebrow span { color: var(--gray); }
-
-  h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(52px, 8vw, 96px);
-    line-height: 0.92;
-    letter-spacing: 2px;
-    color: var(--white);
-    margin-bottom: 10px;
-  }
-
-  h1 em {
-    font-style: normal;
-    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .hero-desc {
-    font-size: 16px;
-    color: var(--gray);
-    max-width: 520px;
-    margin: 20px auto 0;
-    line-height: 1.7;
-    font-weight: 300;
-  }
-
-  /* Main layout */
-  .main {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 24px 80px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-  }
-
-  @media (max-width: 768px) {
-    .main { grid-template-columns: 1fr; }
-    header { padding: 16px 20px; }
-    .hero { padding: 50px 20px 30px; }
-  }
-
-  /* Panels */
-  .panel {
-    background: var(--dark);
-    border: 1px solid rgba(212,168,83,0.12);
-    border-radius: 16px;
-    overflow: hidden;
-    transition: border-color 0.3s;
-  }
-
-  .panel:hover { border-color: rgba(212,168,83,0.25); }
-
-  .panel-header {
-    padding: 18px 24px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .panel-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    flex-shrink: 0;
-  }
-
-  .icon-gold { background: rgba(212,168,83,0.15); }
-  .icon-accent { background: rgba(200,98,42,0.15); }
-  .icon-blue { background: rgba(80,120,200,0.15); }
-
-  .panel-title {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--light);
-  }
-
-  .panel-body { padding: 20px 24px; }
-
-  /* Form elements */
-  label {
-    display: block;
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--gray);
-    margin-bottom: 8px;
-    font-weight: 500;
-  }
-
-  textarea, input, select {
-    width: 100%;
-    background: var(--dark2);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px;
-    color: var(--light);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    padding: 12px 14px;
-    outline: none;
-    transition: border-color 0.25s, box-shadow 0.25s;
-    resize: vertical;
-    margin-bottom: 16px;
-  }
-
-  textarea:focus, input:focus, select:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(212,168,83,0.08);
-  }
-
-  select option { background: var(--dark2); }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  /* Sliders */
-  .slider-group { margin-bottom: 16px; }
-  .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .slider-value { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gold); }
-
-  input[type="range"] {
-    -webkit-appearance: none;
-    height: 4px;
-    background: var(--dark3);
-    border-radius: 4px;
-    padding: 0;
-    margin: 0;
-    border: none;
-    box-shadow: none;
-    cursor: pointer;
-  }
-
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--gold);
-    cursor: pointer;
-    box-shadow: 0 0 8px rgba(212,168,83,0.5);
-    transition: transform 0.2s;
-  }
-
-  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-
-  /* Checkboxes */
-  .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-
-  .checkbox-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-  }
-
-  .checkbox-item input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    margin: 0;
-    padding: 0;
-    accent-color: var(--gold);
-    border-radius: 4px;
-  }
-
-  .checkbox-item span {
-    font-size: 12px;
-    color: var(--light);
-    font-weight: 400;
-  }
-
-  /* Buttons */
-  .btn-primary {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-    border: none;
-    border-radius: 10px;
-    color: var(--black);
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.25s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn-primary::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, var(--gold-light), var(--gold));
-    opacity: 0;
-    transition: opacity 0.25s;
-  }
-
-  .btn-primary:hover::before { opacity: 1; }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212,168,83,0.3); }
-  .btn-primary:active { transform: translateY(0); }
-  .btn-primary span { position: relative; z-index: 1; }
-
-  .btn-secondary {
-    width: 100%;
-    padding: 10px;
-    background: transparent;
-    border: 1px solid rgba(212,168,83,0.3);
-    border-radius: 10px;
-    color: var(--gold);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.25s;
-    margin-top: 10px;
-  }
-
-  .btn-secondary:hover {
-    background: rgba(212,168,83,0.08);
-    border-color: var(--gold);
-  }
-
-  /* Output panel (spans full width) */
-  .panel-full { grid-column: 1 / -1; }
-
-  /* JSON output */
-  .output-area {
-    background: var(--dark2);
-    border: 1px solid rgba(212,168,83,0.1);
-    border-radius: 10px;
-    padding: 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12.5px;
-    line-height: 1.8;
-    color: var(--light);
-    white-space: pre-wrap;
-    word-break: break-word;
-    min-height: 220px;
-    max-height: 480px;
-    overflow-y: auto;
-    position: relative;
-  }
-
-  .output-area::-webkit-scrollbar { width: 6px; }
-  .output-area::-webkit-scrollbar-track { background: transparent; }
-  .output-area::-webkit-scrollbar-thumb { background: rgba(212,168,83,0.3); border-radius: 4px; }
-
-  .json-key { color: var(--gold-light); }
-  .json-string { color: #98C89A; }
-  .json-number { color: #79B8D0; }
-  .json-bool { color: var(--accent); }
-
-  .output-placeholder {
-    color: var(--gray);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    text-align: center;
-    padding: 40px 0;
-    opacity: 0.6;
-    font-style: italic;
-  }
-
-  /* Action row */
-  .action-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 14px;
-  }
-
-  .btn-copy, .btn-reset {
-    flex: 1;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 12px;
-    letter-spacing: 1px;
-    font-weight: 600;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-  }
-
-  .btn-copy {
-    background: rgba(212,168,83,0.12);
-    color: var(--gold);
-    border: 1px solid rgba(212,168,83,0.25);
-  }
-
-  .btn-copy:hover { background: rgba(212,168,83,0.2); }
-
-  .btn-reset {
-    background: rgba(200,98,42,0.1);
-    color: var(--accent);
-    border: 1px solid rgba(200,98,42,0.25);
-  }
-
-  .btn-reset:hover { background: rgba(200,98,42,0.2); }
-
-  /* Loading */
-  .loading {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 40px 0;
-    font-size: 14px;
-    color: var(--gold);
-    font-weight: 300;
-    letter-spacing: 1px;
-  }
-
-  .loading.active { display: flex; }
-
-  .spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(212,168,83,0.2);
-    border-top-color: var(--gold);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Footer */
-  footer {
-    text-align: center;
-    padding: 30px 20px 40px;
-    border-top: 1px solid rgba(255,255,255,0.05);
-  }
-
-  footer p { font-size: 12px; color: var(--gray); letter-spacing: 1px; }
-  footer a { color: var(--gold); text-decoration: none; }
-  footer a:hover { text-decoration: underline; }
-
-  /* Token count tag */
-  .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-  .tag {
-    padding: 4px 10px;
-    border-radius: 100px;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    font-weight: 500;
-    background: rgba(212,168,83,0.1);
-    color: var(--gold);
-    border: 1px solid rgba(212,168,83,0.2);
-  }
-
-  /* Divider */
-  .divider {
-    height: 1px;
-    background: rgba(255,255,255,0.06);
-    margin: 16px 0;
-  }
-
-  /* Tooltip info */
-  .field-info { font-size: 11px; color: var(--gray); margin-top: -12px; margin-bottom: 14px; font-weight: 300; }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background: var(--dark2);
-    border: 1px solid var(--gold);
-    border-radius: 10px;
-    padding: 12px 20px;
-    font-size: 13px;
-    color: var(--gold);
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    z-index: 9000;
-    transform: translateY(80px);
-    opacity: 0;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .toast.show { transform: translateY(0); opacity: 1; }
+:root {
+  --gold:#D4A853;--gold-l:#F0C97A;--gold-d:#8A6520;
+  --black:#060606;--dark:#0E0E0E;--dark2:#161616;--dark3:#1F1F1F;--dark4:#272727;
+  --gray:#777;--light:#EAE2D2;--white:#F6F1E8;--accent:#C8622A;--green:#3DB87A;--blue:#4A90D9;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--light);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* GRAIN */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;opacity:.25;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E")}
+
+/* HEADER */
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 36px;border-bottom:1px solid rgba(212,168,83,.15);position:sticky;top:0;z-index:500;background:rgba(6,6,6,.96);backdrop-filter:blur(20px)}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none}
+.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--accent));border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--black);box-shadow:0 0 18px rgba(212,168,83,.25)}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:3px;color:var(--gold)}
+.logo-sub{font-size:9px;color:var(--gray);letter-spacing:2px;text-transform:uppercase;font-weight:400;display:block;margin-top:-3px}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.speed-pill{display:flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid rgba(61,184,122,.3);border-radius:100px;font-size:10px;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;font-weight:600}
+.speed-dot{width:5px;height:5px;background:var(--green);border-radius:50%;animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.veo-badge{padding:5px 12px;border:1px solid rgba(212,168,83,.25);border-radius:100px;font-size:10px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase}
+
+/* HERO */
+.hero{text-align:center;padding:52px 40px 36px;position:relative;overflow:hidden}
+.hero-glow{position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(212,168,83,.06) 0%,transparent 65%);pointer-events:none}
+.hero-line{display:block;width:1px;height:40px;background:linear-gradient(to bottom,transparent,var(--gold));margin:0 auto 20px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;font-weight:600}
+.eyebrow-dot{width:4px;height:4px;background:var(--gold);border-radius:50%}
+h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,7.5vw,90px);line-height:.9;letter-spacing:1px;color:var(--white);margin-bottom:8px}
+h1 em{font-style:normal;background:linear-gradient(100deg,var(--gold) 20%,var(--gold-l) 50%,var(--accent) 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:14px;color:var(--gray);max-width:500px;margin:16px auto 0;line-height:1.7;font-weight:300}
+.hero-tags{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:20px;flex-wrap:wrap}
+.htag{padding:4px 12px;border-radius:100px;font-size:10px;letter-spacing:1px;font-weight:600;text-transform:uppercase}
+.htag-gold{background:rgba(212,168,83,.1);color:var(--gold);border:1px solid rgba(212,168,83,.2)}
+.htag-green{background:rgba(61,184,122,.1);color:var(--green);border:1px solid rgba(61,184,122,.2)}
+.htag-blue{background:rgba(74,144,217,.1);color:var(--blue);border:1px solid rgba(74,144,217,.2)}
+
+/* TABS */
+.tab-bar{display:flex;gap:4px;max-width:1120px;margin:0 auto 0;padding:0 22px;border-bottom:1px solid rgba(255,255,255,.06)}
+.tab-btn{padding:12px 20px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gray);background:none;border:none;cursor:pointer;transition:color .2s;position:relative;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-btn:hover{color:var(--light)}
+
+/* MAIN */
+.main{max-width:1120px;margin:0 auto;padding:20px 22px 80px}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* GRID */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.col-full{grid-column:1/-1}
+@media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}header{padding:13px 16px}.hero{padding:36px 16px 24px}.tab-bar{padding:0 14px}.main{padding:16px 14px 60px}}
+
+/* CARDS */
+.card{background:var(--dark);border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;transition:border-color .25s}
+.card:hover{border-color:rgba(212,168,83,.18)}
+.card-head{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:9px}
+.card-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ci-gold{background:rgba(212,168,83,.13)} .ci-accent{background:rgba(200,98,42,.13)} .ci-blue{background:rgba(74,144,217,.13)} .ci-green{background:rgba(61,184,122,.13)} .ci-purple{background:rgba(150,80,220,.13)}
+.card-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light)}
+.card-note{font-size:10px;color:var(--gray);margin-left:auto;font-weight:400}
+.card-body{padding:16px 20px}
+
+/* FORM ELEMENTS */
+label{display:block;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);margin-bottom:6px;font-weight:700}
+textarea,input[type=text],select{width:100%;background:var(--dark3);border:1px solid rgba(255,255,255,.07);border-radius:9px;color:var(--light);font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color .2s,box-shadow .2s;resize:none;margin-bottom:12px}
+textarea:focus,input[type=text]:focus,select:focus{border-color:rgba(212,168,83,.5);box-shadow:0 0 0 3px rgba(212,168,83,.07)}
+select option{background:var(--dark3)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.field-hint{font-size:10px;color:var(--gray);margin-top:-8px;margin-bottom:10px;line-height:1.5}
+
+/* SLIDER */
+.sl-group{margin-bottom:12px}
+.sl-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.sl-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);background:rgba(212,168,83,.1);padding:1px 7px;border-radius:4px}
+input[type=range]{-webkit-appearance:none;height:3px;background:var(--dark4);border-radius:3px;padding:0;margin:0;border:none;box-shadow:none;cursor:pointer;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 0 6px rgba(212,168,83,.4);transition:transform .15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25)}
+
+/* CHECKBOXES */
+.checks{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chk{display:flex;align-items:center;gap:5px;cursor:pointer}
+.chk input[type=checkbox]{width:14px;height:14px;margin:0;padding:0;accent-color:var(--gold)}
+.chk span{font-size:11px;color:var(--light)}
+
+/* IMAGE UPLOAD */
+.drop-zone{border:1.5px dashed rgba(212,168,83,.22);border-radius:12px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;margin-bottom:12px;background:rgba(212,168,83,.025);min-height:160px;display:flex;align-items:center;justify-content:center}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--gold);background:rgba(212,168,83,.06);box-shadow:0 0 20px rgba(212,168,83,.07)}
+.dz-inner{padding:24px 20px;text-align:center;pointer-events:none}
+.dz-icon{font-size:32px;display:block;margin-bottom:8px}
+.dz-title{font-size:13px;font-weight:600;color:var(--light);margin-bottom:5px}
+.dz-sub{font-size:11px;color:var(--gray);line-height:1.5}
+.dz-sub b{color:var(--gold)}
+#imgFile{display:none}
+.prev-wrap{display:none;width:100%;position:relative}
+.prev-wrap img{width:100%;max-height:240px;object-fit:cover;border-radius:10px;display:block}
+.prev-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 55%,rgba(6,6,6,.88));border-radius:10px;display:flex;flex-direction:column;justify-content:flex-end;padding:12px 14px}
+.prev-name{font-size:10px;color:var(--gold);letter-spacing:1px;font-weight:700}
+.prev-sz{font-size:9px;color:var(--gray);margin-top:1px}
+.prev-rm{position:absolute;top:8px;right:8px;width:26px;height:26px;background:rgba(6,6,6,.7);border:1px solid rgba(255,255,255,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--light);transition:background .2s;pointer-events:all;z-index:10}
+.prev-rm:hover{background:rgba(200,98,42,.75)}
+.loaded-tag{position:absolute;top:9px;left:9px;background:rgba(61,184,122,.15);border:1px solid rgba(61,184,122,.3);border-radius:100px;padding:2px 9px;font-size:9px;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;font-weight:700}
+
+/* ANALYSIS */
+.ana-spin{display:none;align-items:center;gap:8px;padding:9px 12px;background:rgba(212,168,83,.05);border:1px solid rgba(212,168,83,.13);border-radius:9px;margin-bottom:12px;font-size:11px;color:var(--gold)}
+.ana-spin.on{display:flex}
+.ana-box{display:none;background:rgba(61,184,122,.06);border:1px solid rgba(61,184,122,.18);border-radius:9px;padding:12px;margin-bottom:12px}
+.ana-box.on{display:block}
+.ana-head{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.ana-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);font-weight:700}
+.ana-txt{font-size:12px;color:var(--light);line-height:1.7;opacity:.9}
+
+/* SHOT SEQUENCE */
+.shot-list{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.shot-item{background:var(--dark2);border:1px solid rgba(255,255,255,.07);border-radius:10px;overflow:hidden;transition:border-color .2s}
+.shot-item:hover{border-color:rgba(212,168,83,.2)}
+.shot-item-head{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;user-select:none}
+.shot-num{width:22px;height:22px;background:rgba(212,168,83,.12);border:1px solid rgba(212,168,83,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--gold);flex-shrink:0}
+.shot-label{font-size:12px;font-weight:600;color:var(--light);flex:1}
+.shot-type-tag{font-size:9px;padding:2px 8px;border-radius:100px;background:rgba(74,144,217,.1);color:var(--blue);border:1px solid rgba(74,144,217,.2);letter-spacing:.5px}
+.shot-del{background:none;border:none;color:var(--gray);cursor:pointer;font-size:14px;padding:2px 4px;transition:color .2s}
+.shot-del:hover{color:var(--accent)}
+.shot-body{padding:0 14px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.add-shot-btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:10px;border:1.5px dashed rgba(212,168,83,.2);border-radius:10px;background:none;color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .2s;width:100%}
+.add-shot-btn:hover{border-color:var(--gold);background:rgba(212,168,83,.05)}
+
+/* BUTTONS */
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold) 0%,var(--gold-d) 100%);border:none;border-radius:10px;color:var(--black);font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2.5px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.btn-gen::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--gold-l),var(--gold));opacity:0;transition:opacity .2s}
+.btn-gen:hover::before{opacity:1}
+.btn-gen:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(212,168,83,.28)}
+.btn-gen:active{transform:translateY(0)}
+.btn-gen span{position:relative;z-index:1}
+.btn-gen:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.act-row{display:flex;gap:8px;margin-top:12px}
+.btn-act{flex:1;padding:9px 8px;border-radius:8px;font-size:10px;letter-spacing:1px;font-weight:700;text-transform:uppercase;cursor:pointer;transition:all .2s;border:none}
+.btn-cp{background:rgba(212,168,83,.09);color:var(--gold);border:1px solid rgba(212,168,83,.2)}
+.btn-cp:hover{background:rgba(212,168,83,.18)}
+.btn-dl{background:rgba(74,144,217,.09);color:var(--blue);border:1px solid rgba(74,144,217,.2)}
+.btn-dl:hover{background:rgba(74,144,217,.18)}
+.btn-rs{background:rgba(200,98,42,.08);color:var(--accent);border:1px solid rgba(200,98,42,.2)}
+.btn-rs:hover{background:rgba(200,98,42,.18)}
+
+/* OUTPUT */
+.out-wrap{margin-top:14px;position:relative}
+.out-ph{color:var(--gray);font-size:13px;text-align:center;padding:36px 0;opacity:.55;font-style:italic}
+.out-area{background:var(--dark2);border:1px solid rgba(212,168,83,.09);border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.85;color:var(--light);white-space:pre-wrap;word-break:break-word;max-height:480px;overflow-y:auto;display:none}
+.out-area::-webkit-scrollbar{width:4px}.out-area::-webkit-scrollbar-track{background:transparent}.out-area::-webkit-scrollbar-thumb{background:rgba(212,168,83,.25);border-radius:3px}
+.jk{color:var(--gold-l)}.js{color:#8EC98F}.jn{color:#7DB9CC}.jb{color:var(--accent)}
+
+/* LOADING */
+.ld{display:none;align-items:center;gap:10px;padding:36px 0;font-size:13px;color:var(--gold);font-weight:400;letter-spacing:.5px;justify-content:center}
+.ld.on{display:flex}
+.spin{width:16px;height:16px;border:2px solid rgba(212,168,83,.18);border-top-color:var(--gold);border-radius:50%;animation:rot .6s linear infinite;flex-shrink:0}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* PROGRESS */
+.prog-wrap{display:none;margin-bottom:12px}
+.prog-wrap.on{display:block}
+.prog-bar{height:2px;background:var(--dark4);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold),var(--gold-l));border-radius:2px;transition:width .3s;width:0%}
+.prog-label{font-size:10px;color:var(--gray);margin-top:5px;letter-spacing:.5px}
+
+/* DIVIDER */
+.div{height:1px;background:rgba(255,255,255,.05);margin:12px 0}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--dark2);border:1px solid rgba(212,168,83,.4);border-radius:9px;padding:10px 16px;font-size:12px;color:var(--gold);font-weight:600;z-index:9999;transform:translateY(60px);opacity:0;transition:all .28s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:7px}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* FOOTER */
+footer{text-align:center;padding:24px 20px 38px;border-top:1px solid rgba(255,255,255,.04)}
+footer p{font-size:11px;color:var(--gray);letter-spacing:.8px}
+footer a{color:var(--gold);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+/* TEMPLATE GRID */
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:14px}
+.tpl-btn{padding:10px 12px;background:var(--dark3);border:1px solid rgba(255,255,255,.07);border-radius:9px;color:var(--light);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;text-align:left}
+.tpl-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(212,168,83,.05)}
+.tpl-icon{font-size:16px;display:block;margin-bottom:4px}
+.tpl-name{display:block;letter-spacing:.3px}
 </style>
 </head>
 <body>
 
-<!-- Toast -->
-<div class="toast" id="toast">✓ Copied to clipboard!</div>
+<div class="toast" id="toast"></div>
 
-<!-- Header -->
+<!-- HEADER -->
 <header>
   <a href="https://tiktok.com/paltrend" target="_blank" class="logo">
     <div class="logo-mark">PT</div>
@@ -558,418 +206,851 @@
       <span class="logo-sub">AI Content Studio</span>
     </div>
   </a>
-  <div class="header-badge">
-    <div class="badge-dot"></div>
-    Veo 3.1 Ready
+  <div class="hdr-right">
+    <div class="speed-pill"><div class="speed-dot"></div>Haiku · Ultra Fast</div>
+    <div class="veo-badge">Veo 3.1</div>
   </div>
 </header>
 
-<!-- Hero -->
+<!-- HERO -->
 <div class="hero">
-  <div class="hero-eyebrow">Paltrend Tools <span>—</span> AI Prompt Engineering</div>
+  <div class="hero-glow"></div>
+  <span class="hero-line"></span>
+  <div class="eyebrow"><div class="eyebrow-dot"></div>Paltrend Prompt Engineering<div class="eyebrow-dot"></div></div>
   <h1>Veo 3.1<br><em>Prompt Optimizer</em></h1>
-  <p class="hero-desc">Transform your image descriptions into cinematic, JSON-structured video prompts — engineered for Google Veo 3.1 maximum output quality.</p>
+  <p class="hero-sub">Upload a reference image · Build multi-angle shot sequences · Generate production-grade JSON prompts at lightning speed.</p>
+  <div class="hero-tags">
+    <span class="htag htag-green">⚡ Haiku Powered</span>
+    <span class="htag htag-gold">🖼️ Vision Analysis</span>
+    <span class="htag htag-blue">🎬 Multi-Angle Shots</span>
+    <span class="htag htag-gold">📄 JSON Output</span>
+  </div>
 </div>
 
-<!-- Main grid -->
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('single',this)">Single Shot</button>
+  <button class="tab-btn" onclick="switchTab('multi',this)">🎬 Multi-Angle Sequence</button>
+</div>
+
+<!-- MAIN -->
 <div class="main">
 
-  <!-- Input Panel -->
-  <div class="panel">
-    <div class="panel-header">
-      <div class="panel-icon icon-gold">🎬</div>
-      <div class="panel-title">Scene & Subject</div>
-    </div>
-    <div class="panel-body">
-      <label>Image Description / Scene Brief</label>
-      <textarea id="sceneDesc" rows="5" placeholder="e.g. A melanin-rich woman in gold jewelry walks through a sunlit Lagos marketplace, confident stride, candid moment..."></textarea>
+<!-- ══════════ SINGLE SHOT TAB ══════════ -->
+<div class="tab-panel active" id="tab-single">
+  <div class="grid2" style="margin-bottom:16px">
 
-      <label>Subject / Character</label>
-      <input type="text" id="subject" placeholder="e.g. Nigerian woman, 28, natural hair, luxury streetwear">
-
-      <div class="form-row">
-        <div>
-          <label>Visual Style</label>
-          <select id="style">
-            <option value="cinematic">Cinematic Realism</option>
-            <option value="luxury">Luxury Editorial</option>
-            <option value="documentary">Documentary</option>
-            <option value="fashion">Fashion Film</option>
-            <option value="afrofuturism">Afrofuturism</option>
-            <option value="nollywood">Nollywood Drama</option>
-            <option value="hyperrealistic">Hyperrealistic</option>
-            <option value="noir">Noir / Moody</option>
-          </select>
+    <!-- IMAGE INPUT -->
+    <div class="card col-full">
+      <div class="card-head">
+        <div class="card-icon ci-green">🖼️</div>
+        <div class="card-title">Reference Image</div>
+        <span class="card-note" id="imgLabel">Drag & drop or click · AI Vision auto-analyzes</span>
+      </div>
+      <div class="card-body">
+        <div class="drop-zone" id="dz" onclick="document.getElementById('imgFile').click()">
+          <div class="dz-inner" id="dzInner">
+            <span class="dz-icon">📸</span>
+            <div class="dz-title">Drop your reference image</div>
+            <div class="dz-sub">JPG · PNG · WEBP · Max 5MB<br><b>Paltrend AI Vision</b> reads subject, lighting, mood &amp; palette</div>
+          </div>
+          <div class="prev-wrap" id="prevWrap">
+            <img id="prevImg" src="" alt="">
+            <div class="prev-overlay">
+              <div class="prev-name" id="prevName"></div>
+              <div class="prev-sz" id="prevSz"></div>
+            </div>
+            <div class="prev-rm" onclick="rmImg(event)">✕</div>
+            <div class="loaded-tag">✓ Loaded</div>
+          </div>
         </div>
-        <div>
-          <label>Aspect Ratio</label>
-          <select id="ratio">
-            <option value="16:9">16:9 — Widescreen</option>
-            <option value="9:16">9:16 — Vertical/TikTok</option>
-            <option value="1:1">1:1 — Square</option>
-            <option value="4:5">4:5 — Instagram</option>
-            <option value="2.39:1">2.39:1 — Anamorphic</option>
-          </select>
+        <input type="file" id="imgFile" accept="image/jpeg,image/png,image/webp">
+        <div class="ana-spin" id="anaSpin"><div class="spin"></div>Paltrend AI Vision analyzing image…</div>
+        <div class="ana-box" id="anaBox">
+          <div class="ana-head"><span style="font-size:13px">✅</span><span class="ana-lbl">Image Analyzed · Paltrend AI Vision</span></div>
+          <div class="ana-txt" id="anaTxt"></div>
         </div>
       </div>
-
-      <label>Setting / Location</label>
-      <input type="text" id="location" placeholder="e.g. Lagos street market, golden hour, warm ambient light">
     </div>
+
+    <!-- SCENE -->
+    <div class="card">
+      <div class="card-head"><div class="card-icon ci-gold">🎬</div><div class="card-title">Scene & Subject</div></div>
+      <div class="card-body">
+        <label>Scene Notes</label>
+        <textarea id="sceneDesc" rows="3" placeholder="e.g. Slow motion walk, jewelry glowing, confident energy…"></textarea>
+        <label>Subject Override</label>
+        <input type="text" id="subject" placeholder="Auto-detected from image">
+        <div class="row2">
+          <div>
+            <label>Visual Style</label>
+            <select id="style">
+              <option value="cinematic realism">Cinematic Realism</option>
+              <option value="luxury editorial">Luxury Editorial</option>
+              <option value="documentary">Documentary</option>
+              <option value="fashion film">Fashion Film</option>
+              <option value="afrofuturism">Afrofuturism</option>
+              <option value="nollywood drama">Nollywood Drama</option>
+              <option value="hyperrealistic">Hyperrealistic</option>
+              <option value="noir moody">Noir / Moody</option>
+            </select>
+          </div>
+          <div>
+            <label>Aspect Ratio</label>
+            <select id="ratio">
+              <option value="16:9">16:9 Widescreen</option>
+              <option value="9:16">9:16 TikTok/Reels</option>
+              <option value="1:1">1:1 Square</option>
+              <option value="4:5">4:5 Instagram</option>
+              <option value="2.39:1">2.39:1 Anamorphic</option>
+            </select>
+          </div>
+        </div>
+        <label>Location Override</label>
+        <input type="text" id="location" placeholder="Auto-detected from image">
+      </div>
+    </div>
+
+    <!-- CAMERA -->
+    <div class="card">
+      <div class="card-head"><div class="card-icon ci-accent">⚙️</div><div class="card-title">Camera & Technical</div></div>
+      <div class="card-body">
+        <div class="row2">
+          <div>
+            <label>Movement</label>
+            <select id="camMove">
+              <option value="slow dolly push">Slow Dolly Push</option>
+              <option value="orbit arc">Orbit / Arc</option>
+              <option value="handheld follow">Handheld Follow</option>
+              <option value="static locked">Static Locked</option>
+              <option value="crane rise">Crane Rise</option>
+              <option value="dutch tilt drift">Dutch Tilt Drift</option>
+              <option value="whip pan">Whip Pan</option>
+              <option value="rack focus pull">Rack Focus</option>
+            </select>
+          </div>
+          <div>
+            <label>Shot Type</label>
+            <select id="shotType">
+              <option value="medium close-up">Medium Close-Up</option>
+              <option value="extreme close-up">Extreme Close-Up</option>
+              <option value="wide establishing">Wide Establishing</option>
+              <option value="over the shoulder">Over Shoulder</option>
+              <option value="full body">Full Body</option>
+              <option value="low angle hero">Low Angle Hero</option>
+              <option value="bird's eye">Bird's Eye</option>
+              <option value="dutch angle">Dutch Angle</option>
+            </select>
+          </div>
+        </div>
+        <div class="row2">
+          <div>
+            <label>Lens</label>
+            <select id="lens">
+              <option value="85mm f/1.4">85mm f/1.4 Portrait</option>
+              <option value="35mm f/1.8">35mm f/1.8 Street</option>
+              <option value="24mm wide">24mm Wide</option>
+              <option value="50mm standard">50mm Standard</option>
+              <option value="135mm telephoto">135mm Telephoto</option>
+              <option value="anamorphic 2x">Anamorphic 2x</option>
+            </select>
+          </div>
+          <div>
+            <label>Duration</label>
+            <select id="duration">
+              <option value="4">4s</option>
+              <option value="6" selected>6s</option>
+              <option value="8">8s</option>
+              <option value="10">10s</option>
+            </select>
+          </div>
+        </div>
+        <div class="sl-group">
+          <div class="sl-head"><label style="margin:0">Motion Intensity</label><span class="sl-val" id="mV">5</span></div>
+          <input type="range" min="1" max="10" value="5" oninput="document.getElementById('mV').textContent=this.value">
+        </div>
+        <div class="sl-group">
+          <div class="sl-head"><label style="margin:0">Film Grain</label><span class="sl-val" id="gV">3</span></div>
+          <input type="range" id="grainSlider" min="0" max="10" value="3" oninput="document.getElementById('gV').textContent=this.value">
+        </div>
+        <label>Lighting</label>
+        <select id="lighting">
+          <option value="auto from image">Auto from Image</option>
+          <option value="golden hour natural">Golden Hour Natural</option>
+          <option value="soft window diffused">Soft Window Diffused</option>
+          <option value="dramatic rembrandt">Dramatic Rembrandt</option>
+          <option value="neon accent night">Neon Accent Night</option>
+          <option value="harsh midday sun">Harsh Midday Sun</option>
+          <option value="blue hour dusk">Blue Hour Dusk</option>
+          <option value="studio three-point">Studio Three-Point</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- AUDIO -->
+    <div class="card">
+      <div class="card-head"><div class="card-icon ci-blue">🎧</div><div class="card-title">Audio & Dialogue</div></div>
+      <div class="card-body">
+        <label>Ambient Sound</label>
+        <input type="text" id="ambient" placeholder="e.g. distant Afrobeats, market sounds, wind…">
+        <label>Spoken Dialogue</label>
+        <textarea id="dialogue" rows="2" placeholder="e.g. 'This is what we built.' — Nigerian accent, confident"></textarea>
+        <p class="field-hint">Veo 3.1 supports native audio + accent-specific dialogue.</p>
+        <label>Music Mood</label>
+        <select id="music">
+          <option value="none">No Music</option>
+          <option value="afrobeats upbeat">Afrobeats — Upbeat</option>
+          <option value="amapiano smooth">Amapiano — Smooth</option>
+          <option value="cinematic orchestral">Cinematic Orchestral</option>
+          <option value="lo-fi ambient">Lo-Fi Ambient</option>
+          <option value="afropop melodic">Afropop — Melodic</option>
+          <option value="hip-hop trap">Hip-Hop / Trap</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- QUALITY -->
+    <div class="card">
+      <div class="card-head"><div class="card-icon ci-gold">✨</div><div class="card-title">Quality & Palette</div></div>
+      <div class="card-body">
+        <label>Boosters</label>
+        <div class="checks" id="boosters">
+          <label class="chk"><input type="checkbox" value="photorealistic skin" checked><span>Skin Realism</span></label>
+          <label class="chk"><input type="checkbox" value="sharp eye reflections" checked><span>Sharp Eyes</span></label>
+          <label class="chk"><input type="checkbox" value="4K ultra detail"><span>4K Detail</span></label>
+          <label class="chk"><input type="checkbox" value="face tracking"><span>Face Track</span></label>
+          <label class="chk"><input type="checkbox" value="natural hair movement"><span>Hair Flow</span></label>
+          <label class="chk"><input type="checkbox" value="volumetric light" checked><span>Vol. Light</span></label>
+          <label class="chk"><input type="checkbox" value="shallow DOF"><span>Shallow DOF</span></label>
+          <label class="chk"><input type="checkbox" value="anamorphic flare"><span>Lens Flare</span></label>
+          <label class="chk"><input type="checkbox" value="cinematic color grade"><span>Color Grade</span></label>
+          <label class="chk"><input type="checkbox" value="cloth physics"><span>Cloth Physics</span></label>
+        </div>
+        <div class="div"></div>
+        <label>Negative Prompts</label>
+        <textarea id="negatives" rows="2">blurry, distorted hands, unnatural skin, watermark, text overlay, plastic skin, cartoonish, artifacts</textarea>
+        <label>Color Palette</label>
+        <select id="palette">
+          <option value="auto from image">Auto from Image</option>
+          <option value="warm earth — amber, terracotta, brown">Warm Earth</option>
+          <option value="cool luxury — navy, gold, charcoal">Cool Luxury</option>
+          <option value="vibrant Lagos — green, orange, white">Vibrant Lagos</option>
+          <option value="noir — black, silver, grey">Noir</option>
+          <option value="afrofuturist — blue, purple, chrome">Afrofuturist</option>
+          <option value="sunset — magenta, peach, deep red">Sunset</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="card col-full">
+      <div class="card-head">
+        <div class="card-icon ci-gold">📄</div>
+        <div class="card-title">Optimized JSON Prompt</div>
+        <span class="card-note" id="outMode">Ready</span>
+      </div>
+      <div class="card-body">
+        <div class="prog-wrap" id="progWrap">
+          <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+          <div class="prog-label" id="progLabel">Initializing…</div>
+        </div>
+        <button class="btn-gen" id="genBtn" onclick="generate()"><span>⚡ Generate Veo 3.1 Prompt</span></button>
+        <div class="ld" id="ld"><div class="spin"></div><span id="ldTxt">Generating…</span></div>
+        <div class="out-wrap">
+          <div class="out-ph" id="outPh">Your optimized JSON prompt appears here →</div>
+          <div class="out-area" id="outArea"></div>
+        </div>
+        <div class="act-row" id="actRow" style="display:none">
+          <button class="btn-act btn-cp" onclick="copyJSON()">📋 Copy JSON</button>
+          <button class="btn-act btn-cp" onclick="copyPlain()">📝 Copy Plain</button>
+          <button class="btn-act btn-dl" onclick="downloadJSON()">⬇ Download</button>
+          <button class="btn-act btn-rs" onclick="resetAll()">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+
   </div>
-
-  <!-- Technical Panel -->
-  <div class="panel">
-    <div class="panel-header">
-      <div class="panel-icon icon-accent">⚙️</div>
-      <div class="panel-title">Camera & Technical</div>
-    </div>
-    <div class="panel-body">
-      <div class="form-row">
-        <div>
-          <label>Camera Movement</label>
-          <select id="cameraMove">
-            <option value="slow dolly push">Slow Dolly Push</option>
-            <option value="orbit / arc shot">Orbit / Arc</option>
-            <option value="handheld follow">Handheld Follow</option>
-            <option value="static locked">Static Locked</option>
-            <option value="crane rise">Crane Rise</option>
-            <option value="dutch tilt drift">Dutch Tilt Drift</option>
-            <option value="whip pan">Whip Pan</option>
-            <option value="rack focus">Rack Focus</option>
-          </select>
-        </div>
-        <div>
-          <label>Shot Type</label>
-          <select id="shotType">
-            <option value="medium close-up">Medium Close-Up</option>
-            <option value="extreme close-up">Extreme Close-Up</option>
-            <option value="wide establishing">Wide Establishing</option>
-            <option value="over the shoulder">Over Shoulder</option>
-            <option value="full body">Full Body</option>
-            <option value="low angle">Low Angle</option>
-            <option value="bird's eye">Bird's Eye</option>
-            <option value="dutch angle">Dutch Angle</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div>
-          <label>Lens / Look</label>
-          <select id="lens">
-            <option value="85mm f/1.4 portrait">85mm f/1.4 Portrait</option>
-            <option value="35mm f/1.8 street">35mm f/1.8 Street</option>
-            <option value="24mm wide">24mm Wide</option>
-            <option value="50mm standard">50mm Standard</option>
-            <option value="135mm telephoto">135mm Telephoto</option>
-            <option value="anamorphic 2x">Anamorphic 2x</option>
-          </select>
-        </div>
-        <div>
-          <label>Duration (seconds)</label>
-          <select id="duration">
-            <option value="4">4s</option>
-            <option value="6" selected>6s</option>
-            <option value="8">8s</option>
-            <option value="10">10s</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="slider-group">
-        <div class="slider-header">
-          <label style="margin:0">Motion Intensity</label>
-          <span class="slider-value" id="motionVal">5</span>
-        </div>
-        <input type="range" id="motionSlider" min="1" max="10" value="5" oninput="document.getElementById('motionVal').textContent=this.value">
-      </div>
-
-      <div class="slider-group">
-        <div class="slider-header">
-          <label style="margin:0">Film Grain</label>
-          <span class="slider-value" id="grainVal">3</span>
-        </div>
-        <input type="range" id="grainSlider" min="0" max="10" value="3" oninput="document.getElementById('grainVal').textContent=this.value">
-      </div>
-
-      <label>Lighting Style</label>
-      <select id="lighting">
-        <option value="golden hour natural">Golden Hour Natural</option>
-        <option value="soft window diffused">Soft Window Diffused</option>
-        <option value="dramatic rembrandt">Dramatic Rembrandt</option>
-        <option value="neon accent night">Neon Accent Night</option>
-        <option value="harsh midday sun">Harsh Midday Sun</option>
-        <option value="blue hour dusk">Blue Hour Dusk</option>
-        <option value="studio three-point">Studio Three-Point</option>
-        <option value="candlelight warm">Candlelight Warm</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Audio & Enhancement Panel -->
-  <div class="panel">
-    <div class="panel-header">
-      <div class="panel-icon icon-blue">🎧</div>
-      <div class="panel-title">Audio & Dialogue</div>
-    </div>
-    <div class="panel-body">
-      <label>Ambient Sound Description</label>
-      <input type="text" id="ambient" placeholder="e.g. bustling market sounds, distant Afrobeats, birds, wind">
-
-      <label>Dialogue / Spoken Words (optional)</label>
-      <textarea id="dialogue" rows="3" placeholder="e.g. 'This is what we built.' — delivered in a Nigerian accent, calm and confident"></textarea>
-      <p class="field-info">Veo 3.1 supports native audio generation including dialogue.</p>
-
-      <label>Music Mood</label>
-      <select id="music">
-        <option value="none">No Music</option>
-        <option value="afrobeats upbeat">Afrobeats — Upbeat</option>
-        <option value="amapiano smooth">Amapiano — Smooth</option>
-        <option value="cinematic orchestral">Cinematic Orchestral</option>
-        <option value="lo-fi ambient">Lo-Fi Ambient</option>
-        <option value="afropop melodic">Afropop — Melodic</option>
-        <option value="hip-hop trap">Hip-Hop / Trap</option>
-        <option value="gospel choir">Gospel Choir</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Modifiers Panel -->
-  <div class="panel">
-    <div class="panel-header">
-      <div class="panel-icon icon-gold">✨</div>
-      <div class="panel-title">Enhancements & Negatives</div>
-    </div>
-    <div class="panel-body">
-      <label>Quality Boosters (select all that apply)</label>
-      <div class="checkbox-group" id="boosters">
-        <label class="checkbox-item"><input type="checkbox" value="photorealistic skin texture" checked><span>Photorealistic Skin</span></label>
-        <label class="checkbox-item"><input type="checkbox" value="sharp eye reflections" checked><span>Sharp Eyes</span></label>
-        <label class="checkbox-item"><input type="checkbox" value="4K ultra detail"><span>4K Detail</span></label>
-        <label class="checkbox-item"><input type="checkbox" value="consistent face tracking"><span>Face Tracking</span></label>
-        <label class="checkbox-item"><input type="checkbox" value="natural hair movement"><span>Hair Movement</span></label>
-        <label class="checkbox-item"><input type="checkbox" value="volumetric light rays" checked><span>Volumetric Light</span></label>
-        <label class="checkbox-item"><input type="checkbox" value="shallow depth of field"><span>Shallow DOF</span></label>
-        <label class="checkbox-item"><input type="checkbox" value="lens flare bokeh"><span>Lens Flare</span></label>
-        <label class="checkbox-item"><input type="checkbox" value="color graded LUT"><span>Color Grade</span></label>
-        <label class="checkbox-item"><input type="checkbox" value="cloth physics simulation"><span>Cloth Physics</span></label>
-      </div>
-
-      <div class="divider"></div>
-
-      <label>Negative Prompts (exclude)</label>
-      <textarea id="negatives" rows="3" placeholder="e.g. blurry, distorted hands, unnatural skin, watermark, text overlay, overexposed, plastic look...">blurry, distorted hands, unnatural skin tone, watermark, text overlay, overexposed, plastic skin, cartoonish</textarea>
-
-      <label>Color Palette</label>
-      <select id="palette">
-        <option value="warm earth tones — amber, terracotta, deep brown">Warm Earth — Amber / Terracotta</option>
-        <option value="cool luxury — navy, gold, charcoal">Cool Luxury — Navy / Gold</option>
-        <option value="vibrant Lagos — green, orange, white">Vibrant Lagos — Green / Orange</option>
-        <option value="monochromatic noir — black, silver, deep grey">Noir — Black / Silver</option>
-        <option value="afrofuturist — electric blue, purple, chrome">Afrofuturist — Blue / Purple</option>
-        <option value="sunset palette — magenta, peach, deep red">Sunset — Magenta / Peach</option>
-        <option value="natural daylight — soft white, sage, sky blue">Natural Daylight</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Output Panel (full width) -->
-  <div class="panel panel-full">
-    <div class="panel-header">
-      <div class="panel-icon icon-gold">📄</div>
-      <div class="panel-title">Optimized JSON Prompt Output</div>
-    </div>
-    <div class="panel-body">
-      <button class="btn-primary" onclick="generatePrompt()">
-        <span>⚡ Generate Optimized Veo 3.1 Prompt</span>
-      </button>
-
-      <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <span>Paltrend AI is optimizing your prompt...</span>
-      </div>
-
-      <div id="outputWrapper" style="margin-top:16px">
-        <div class="output-placeholder" id="placeholder">Your optimized JSON prompt will appear here →</div>
-        <div class="output-area" id="outputArea" style="display:none"></div>
-      </div>
-
-      <div class="action-row" id="actionRow" style="display:none">
-        <button class="btn-copy" onclick="copyJSON()">📋 Copy JSON</button>
-        <button class="btn-copy" onclick="copyPlainPrompt()">📝 Copy Plain Prompt</button>
-        <button class="btn-reset" onclick="resetAll()">↺ Reset</button>
-      </div>
-    </div>
-  </div>
-
 </div>
 
-<!-- Footer -->
+<!-- ══════════ MULTI-ANGLE TAB ══════════ -->
+<div class="tab-panel" id="tab-multi">
+  <div class="grid2">
+
+    <!-- IMAGE for multi -->
+    <div class="card col-full">
+      <div class="card-head"><div class="card-icon ci-green">🖼️</div><div class="card-title">Reference Image</div><span class="card-note">Same image used across all shots</span></div>
+      <div class="card-body">
+        <div class="drop-zone" id="dzM" onclick="document.getElementById('imgFileM').click()">
+          <div class="dz-inner" id="dzMInner">
+            <span class="dz-icon">📸</span>
+            <div class="dz-title">Drop reference image for sequence</div>
+            <div class="dz-sub">Paltrend AI locks subject identity across all angles</div>
+          </div>
+          <div class="prev-wrap" id="prevWrapM">
+            <img id="prevImgM" src="" alt="">
+            <div class="prev-overlay">
+              <div class="prev-name" id="prevNameM"></div>
+              <div class="prev-sz" id="prevSzM"></div>
+            </div>
+            <div class="prev-rm" onclick="rmImgM(event)">✕</div>
+            <div class="loaded-tag">✓ Loaded</div>
+          </div>
+        </div>
+        <input type="file" id="imgFileM" accept="image/jpeg,image/png,image/webp">
+        <div class="ana-spin" id="anaSpinM"><div class="spin"></div>Analyzing for sequence…</div>
+        <div class="ana-box" id="anaBoxM">
+          <div class="ana-head"><span style="font-size:13px">✅</span><span class="ana-lbl">Image Ready · Subject Locked</span></div>
+          <div class="ana-txt" id="anaTxtM"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHOT BUILDER -->
+    <div class="card col-full">
+      <div class="card-head"><div class="card-icon ci-blue">🎬</div><div class="card-title">Shot Sequence Builder</div><span class="card-note">Build your cinematic sequence shot by shot</span></div>
+      <div class="card-body">
+
+        <!-- Quick templates -->
+        <label>Quick Sequence Templates</label>
+        <div class="tpl-grid">
+          <button class="tpl-btn" onclick="loadTemplate('reveal')"><span class="tpl-icon">🌅</span><span class="tpl-name">Cinematic Reveal</span></button>
+          <button class="tpl-btn" onclick="loadTemplate('action')"><span class="tpl-icon">⚡</span><span class="tpl-name">Action Scene</span></button>
+          <button class="tpl-btn" onclick="loadTemplate('portrait')"><span class="tpl-icon">👤</span><span class="tpl-name">Portrait Sequence</span></button>
+          <button class="tpl-btn" onclick="loadTemplate('luxury')"><span class="tpl-icon">💎</span><span class="tpl-name">Luxury Brand</span></button>
+          <button class="tpl-btn" onclick="loadTemplate('street')"><span class="tpl-icon">🏙️</span><span class="tpl-name">Street Walk</span></button>
+          <button class="tpl-btn" onclick="loadTemplate('nollywood')"><span class="tpl-icon">🎭</span><span class="tpl-name">Nollywood Drama</span></button>
+        </div>
+
+        <div class="div"></div>
+        <label>Custom Shots</label>
+        <div class="shot-list" id="shotList"></div>
+        <button class="add-shot-btn" onclick="addShot()">＋ Add Shot</button>
+      </div>
+    </div>
+
+    <!-- GLOBAL SETTINGS -->
+    <div class="card">
+      <div class="card-head"><div class="card-icon ci-accent">🎛️</div><div class="card-title">Global Settings</div></div>
+      <div class="card-body">
+        <div class="row2">
+          <div>
+            <label>Overall Style</label>
+            <select id="mStyle">
+              <option value="cinematic realism">Cinematic Realism</option>
+              <option value="luxury editorial">Luxury Editorial</option>
+              <option value="afrofuturism">Afrofuturism</option>
+              <option value="nollywood drama">Nollywood Drama</option>
+              <option value="fashion film">Fashion Film</option>
+              <option value="documentary">Documentary</option>
+            </select>
+          </div>
+          <div>
+            <label>Aspect Ratio</label>
+            <select id="mRatio">
+              <option value="16:9">16:9 Widescreen</option>
+              <option value="9:16">9:16 TikTok/Reels</option>
+              <option value="2.39:1">2.39:1 Anamorphic</option>
+              <option value="1:1">1:1 Square</option>
+            </select>
+          </div>
+        </div>
+        <label>Subject / Character</label>
+        <input type="text" id="mSubject" placeholder="Auto-detected or override here">
+        <label>Color Palette</label>
+        <select id="mPalette">
+          <option value="auto from image">Auto from Image</option>
+          <option value="warm earth — amber, terracotta">Warm Earth</option>
+          <option value="cool luxury — navy, gold">Cool Luxury</option>
+          <option value="vibrant Lagos — green, orange">Vibrant Lagos</option>
+          <option value="noir — black, silver">Noir</option>
+          <option value="afrofuturist — blue, purple">Afrofuturist</option>
+        </select>
+        <label>Negative Prompts</label>
+        <textarea id="mNeg" rows="2">blurry, distorted hands, unnatural skin, watermark, plastic skin, cartoonish, artifacts</textarea>
+      </div>
+    </div>
+
+    <!-- AUDIO GLOBAL -->
+    <div class="card">
+      <div class="card-head"><div class="card-icon ci-blue">🎧</div><div class="card-title">Audio (Global)</div></div>
+      <div class="card-body">
+        <label>Music / Score</label>
+        <select id="mMusic">
+          <option value="none">No Music</option>
+          <option value="afrobeats upbeat">Afrobeats — Upbeat</option>
+          <option value="amapiano smooth">Amapiano — Smooth</option>
+          <option value="cinematic orchestral">Cinematic Orchestral</option>
+          <option value="lo-fi ambient">Lo-Fi Ambient</option>
+          <option value="hip-hop trap">Hip-Hop / Trap</option>
+        </select>
+        <label>Ambient Background</label>
+        <input type="text" id="mAmbient" placeholder="e.g. street sounds, market noise, silence…">
+        <label>Opening Dialogue</label>
+        <textarea id="mDialogue" rows="2" placeholder="e.g. 'Watch how we move.' — Nigerian accent"></textarea>
+      </div>
+    </div>
+
+    <!-- MULTI OUTPUT -->
+    <div class="card col-full">
+      <div class="card-head"><div class="card-icon ci-gold">🎞️</div><div class="card-title">Multi-Angle Sequence JSON</div><span class="card-note" id="mOutMode">Ready</span></div>
+      <div class="card-body">
+        <div class="prog-wrap" id="mProgWrap">
+          <div class="prog-bar"><div class="prog-fill" id="mProgFill"></div></div>
+          <div class="prog-label" id="mProgLabel">Initializing…</div>
+        </div>
+        <button class="btn-gen" id="mGenBtn" onclick="generateMulti()"><span>⚡ Generate Shot Sequence</span></button>
+        <div class="ld" id="mLd"><div class="spin"></div><span id="mLdTxt">Building sequence…</span></div>
+        <div class="out-wrap">
+          <div class="out-ph" id="mOutPh">Your multi-angle sequence JSON appears here →</div>
+          <div class="out-area" id="mOutArea"></div>
+        </div>
+        <div class="act-row" id="mActRow" style="display:none">
+          <button class="btn-act btn-cp" onclick="copyMultiJSON()">📋 Copy JSON</button>
+          <button class="btn-act btn-dl" onclick="downloadMultiJSON()">⬇ Download</button>
+          <button class="btn-act btn-rs" onclick="resetMulti()">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div><!-- end .main -->
+
 <footer>
-  <p>Built by <a href="https://tiktok.com/paltrend" target="_blank">Paltrend</a> — AI Content Studio, Nigeria &nbsp;·&nbsp; 
-  <a href="https://tiktok.com/paltrend" target="_blank">@paltrend on TikTok</a></p>
-  <p style="margin-top:8px; font-size:11px; opacity:0.5;">Prompt Optimizer v1.0 · Powered by Paltrend AI · Veo 3.1 Optimized</p>
+  <p>Built by <a href="https://tiktok.com/paltrend" target="_blank">Paltrend</a> — AI Content Studio, Nigeria &nbsp;·&nbsp; <a href="https://tiktok.com/paltrend" target="_blank">@paltrend on TikTok</a></p>
+  <p style="margin-top:6px;font-size:10px;opacity:.35;">Prompt Optimizer v3.0 · Haiku Speed · Multi-Angle Shots · Image Vision · by A.JAMES</p>
 </footer>
 
 <script>
-let lastJSON = null;
+// ── STATE ──
+let imgB64=null,imgType=null,imgAna=null;
+let imgB64M=null,imgTypeM=null,imgAnaM=null;
+let lastJSON=null,lastMultiJSON=null;
+let shotCount=0;
 
-async function generatePrompt() {
-  const sceneDesc = document.getElementById('sceneDesc').value.trim();
-  if (!sceneDesc) {
-    showToast('⚠️ Please enter a scene description!');
-    return;
-  }
-
-  const subject = document.getElementById('subject').value || 'cinematic subject';
-  const style = document.getElementById('style').value;
-  const ratio = document.getElementById('ratio').value;
-  const location = document.getElementById('location').value || 'unspecified environment';
-  const cameraMove = document.getElementById('cameraMove').value;
-  const shotType = document.getElementById('shotType').value;
-  const lens = document.getElementById('lens').value;
-  const duration = document.getElementById('duration').value;
-  const motionIntensity = document.getElementById('motionSlider').value;
-  const filmGrain = document.getElementById('grainSlider').value;
-  const lighting = document.getElementById('lighting').value;
-  const ambient = document.getElementById('ambient').value || 'natural ambient sounds';
-  const dialogue = document.getElementById('dialogue').value || null;
-  const music = document.getElementById('music').value;
-  const negatives = document.getElementById('negatives').value;
-  const palette = document.getElementById('palette').value;
-
-  const boosterChecks = document.querySelectorAll('#boosters input:checked');
-  const boosters = Array.from(boosterChecks).map(b => b.value);
-
-  document.getElementById('loading').classList.add('active');
-  document.getElementById('placeholder').style.display = 'none';
-  document.getElementById('outputArea').style.display = 'none';
-  document.getElementById('actionRow').style.display = 'none';
-
-  const systemPrompt = `You are an expert AI video prompt engineer specializing in Google Veo 3.1. 
-Your task is to generate a highly optimized, production-grade JSON prompt object for Veo 3.1 image-to-video generation.
-Output ONLY valid JSON. No markdown, no explanation. Start with { and end with }.
-The JSON must include these exact keys:
-"veo_version", "prompt_id", "scene_description", "subject_detail", "visual_style", "camera", "lighting", "audio", "color_palette", "quality_tags", "negative_prompt", "generation_params", "paltrend_notes"
-
-Make each field detailed, cinematic, and optimized for the highest quality output. 
-For scene_description, expand and enhance the user's brief into a rich, directorial description (3-5 sentences).
-For paltrend_notes, add 2-3 professional tips specific to this prompt.`;
-
-  const userPrompt = `Create an optimized Veo 3.1 JSON prompt with these inputs:
-- Scene Brief: ${sceneDesc}
-- Subject: ${subject}
-- Style: ${style}
-- Location/Setting: ${location}
-- Camera Movement: ${cameraMove}
-- Shot Type: ${shotType}
-- Lens: ${lens}
-- Lighting: ${lighting}
-- Duration: ${duration}s
-- Motion Intensity: ${motionIntensity}/10
-- Film Grain: ${filmGrain}/10
-- Aspect Ratio: ${ratio}
-- Ambient Sound: ${ambient}
-${dialogue ? `- Dialogue: ${dialogue}` : ''}
-- Music Mood: ${music}
-- Quality Boosters: ${boosters.join(', ')}
-- Color Palette: ${palette}
-- Negative Prompts: ${negatives}`;
-
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userPrompt }]
-      })
-    });
-
-    const data = await res.json();
-    const raw = data.content.map(b => b.text || '').join('');
-    const clean = raw.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
-    lastJSON = parsed;
-    renderJSON(parsed);
-  } catch (err) {
-    // Fallback: generate locally if API fails
-    lastJSON = buildFallbackJSON({sceneDesc, subject, style, ratio, location, cameraMove, shotType, lens, duration, motionIntensity, filmGrain, lighting, ambient, dialogue, music, negatives, palette, boosters});
-    renderJSON(lastJSON);
-  } finally {
-    document.getElementById('loading').classList.remove('active');
-  }
+// ── TABS ──
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
 }
 
-function buildFallbackJSON(d) {
-  return {
-    veo_version: "3.1",
-    prompt_id: `PLT-${Date.now()}`,
-    scene_description: `${d.sceneDesc} The scene unfolds with ${d.style} visual language, bathed in ${d.lighting} illumination that sculpts every detail of the environment. The camera moves with intentional grace through ${d.location}, treating each frame as a painted moment. This is cinematic storytelling at its highest resolution.`,
-    subject_detail: { description: d.subject, skin_rendering: "photorealistic melanin-accurate", micro_expressions: true },
-    visual_style: { style: d.style, color_palette: d.palette, film_grain: parseInt(d.filmGrain), lens: d.lens },
-    camera: { movement: d.cameraMove, shot_type: d.shotType, motion_intensity: parseInt(d.motionIntensity), aspect_ratio: d.ratio },
-    lighting: { type: d.lighting, volumetric: true, shadow_detail: "deep natural" },
-    audio: { ambient: d.ambient, dialogue: d.dialogue || null, music_mood: d.music, audio_quality: "48kHz spatial" },
-    color_palette: d.palette,
-    quality_tags: d.boosters,
-    negative_prompt: d.negatives.split(',').map(s => s.trim()),
-    generation_params: { duration_seconds: parseInt(d.duration), fps: 24, resolution: "1080p", guidance_scale: 7.5 },
-    paltrend_notes: ["Use face-reference image for consistent subject identity across shots.", "Apply negative prompts strictly to avoid plastic skin artifacts.", "Pair with Veo 3.1 image-anchor for best face-locked output."]
+// ── PROGRESS ──
+function startProg(fillId,labelId,wrapId){
+  const wrap=document.getElementById(wrapId),fill=document.getElementById(fillId),lbl=document.getElementById(labelId);
+  wrap.classList.add('on'); fill.style.width='0%';
+  const steps=[
+    [300,'Reading inputs…',15],
+    [600,'Sending to Haiku…',35],
+    [1000,'Generating JSON…',65],
+    [1400,'Optimizing prompt…',85],
+  ];
+  steps.forEach(([t,txt,w])=>setTimeout(()=>{fill.style.width=w+'%';lbl.textContent=txt},t));
+}
+function endProg(fillId,labelId,wrapId){
+  const fill=document.getElementById(fillId),lbl=document.getElementById(labelId);
+  fill.style.width='100%';lbl.textContent='Done!';
+  setTimeout(()=>document.getElementById(wrapId).classList.remove('on'),600);
+}
+
+// ── IMAGE UPLOAD (single) ──
+const dz=document.getElementById('dz');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files[0])handleImg(e.dataTransfer.files[0])});
+document.getElementById('imgFile').addEventListener('change',e=>{if(e.target.files[0])handleImg(e.target.files[0])});
+
+function handleImg(f){
+  if(!f.type.startsWith('image/')){toast('⚠️ Image files only');return}
+  if(f.size>5.5e6){toast('⚠️ Max 5MB');return}
+  const r=new FileReader();
+  r.onload=async ev=>{
+    const url=ev.target.result;
+    imgType=f.type;imgB64=url.split(',')[1];
+    document.getElementById('prevImg').src=url;
+    document.getElementById('prevName').textContent=f.name;
+    document.getElementById('prevSz').textContent=(f.size/1024).toFixed(0)+' KB';
+    document.getElementById('dzInner').style.display='none';
+    document.getElementById('prevWrap').style.display='block';
+    document.getElementById('imgLabel').textContent='✅ Image-Guided Mode';
+    document.getElementById('outMode').textContent='🖼️ Vision Mode';
+    await analyzeImg();
+  };r.readAsDataURL(f);
+}
+function rmImg(e){
+  e.stopPropagation();imgB64=imgType=imgAna=null;
+  document.getElementById('prevWrap').style.display='none';
+  document.getElementById('dzInner').style.display='';
+  document.getElementById('anaBox').classList.remove('on');
+  document.getElementById('imgLabel').textContent='Drag & drop or click · AI Vision auto-analyzes';
+  document.getElementById('imgFile').value='';
+}
+async function analyzeImg(){
+  document.getElementById('anaSpin').classList.add('on');
+  document.getElementById('anaBox').classList.remove('on');
+  try{
+    const res=await callHaiku(
+      `Analyze this image for Veo 3.1 video generation in 3-4 cinematic sentences. Cover: subject/person details & skin tone, setting/environment, lighting quality, color palette, mood, and suggest how it should animate into motion. Be directorial and specific.`,
+      null,[{type:'image',source:{type:'base64',media_type:imgType,data:imgB64}},{type:'text',text:'Analyze for Veo 3.1 prompt generation.'}]
+    );
+    imgAna=res;
+    document.getElementById('anaTxt').textContent=imgAna;
+    document.getElementById('anaBox').classList.add('on');
+    toast('✅ Image analyzed!');
+  }catch{
+    imgAna='Image uploaded. Visual context included in generation.';
+    document.getElementById('anaTxt').textContent=imgAna;
+    document.getElementById('anaBox').classList.add('on');
+  }finally{document.getElementById('anaSpin').classList.remove('on')}
+}
+
+// ── IMAGE UPLOAD (multi) ──
+const dzM=document.getElementById('dzM');
+dzM.addEventListener('dragover',e=>{e.preventDefault();dzM.classList.add('drag')});
+dzM.addEventListener('dragleave',()=>dzM.classList.remove('drag'));
+dzM.addEventListener('drop',e=>{e.preventDefault();dzM.classList.remove('drag');if(e.dataTransfer.files[0])handleImgM(e.dataTransfer.files[0])});
+document.getElementById('imgFileM').addEventListener('change',e=>{if(e.target.files[0])handleImgM(e.target.files[0])});
+
+function handleImgM(f){
+  if(!f.type.startsWith('image/')){toast('⚠️ Image files only');return}
+  const r=new FileReader();
+  r.onload=async ev=>{
+    const url=ev.target.result;imgTypeM=f.type;imgB64M=url.split(',')[1];
+    document.getElementById('prevImgM').src=url;
+    document.getElementById('prevNameM').textContent=f.name;
+    document.getElementById('prevSzM').textContent=(f.size/1024).toFixed(0)+' KB';
+    document.getElementById('dzMInner').style.display='none';
+    document.getElementById('prevWrapM').style.display='block';
+    document.getElementById('anaSpinM').classList.add('on');
+    try{
+      const res=await callHaiku('Describe this image briefly for a video sequence: subject, setting, lighting, mood in 2 sentences.',
+        null,[{type:'image',source:{type:'base64',media_type:imgTypeM,data:imgB64M}},{type:'text',text:'Analyze for shot sequence.'}]);
+      imgAnaM=res;
+      document.getElementById('anaTxtM').textContent=imgAnaM;
+      document.getElementById('anaBoxM').classList.add('on');
+    }catch{imgAnaM='Image loaded for sequence.'}
+    finally{document.getElementById('anaSpinM').classList.remove('on')}
+  };r.readAsDataURL(f);
+}
+function rmImgM(e){
+  e.stopPropagation();imgB64M=imgTypeM=imgAnaM=null;
+  document.getElementById('prevWrapM').style.display='none';
+  document.getElementById('dzMInner').style.display='';
+  document.getElementById('anaBoxM').classList.remove('on');
+  document.getElementById('imgFileM').value='';
+}
+
+// ── SHOT BUILDER ──
+const shotTemplates={
+  reveal:[
+    {label:'Wide Establishing',move:'crane rise',shot:'wide establishing',lens:'24mm wide',dur:'4',angle:'high overhead descending'},
+    {label:'Hero Entrance',move:'slow dolly push',shot:'full body',lens:'35mm f/1.8',dur:'5',angle:'low angle hero'},
+    {label:'Face Reveal',move:'rack focus pull',shot:'medium close-up',lens:'85mm f/1.4',dur:'4',angle:'eye level'},
+    {label:'Detail Close-Up',move:'static locked',shot:'extreme close-up',lens:'135mm telephoto',dur:'3',angle:'macro detail'}
+  ],
+  action:[
+    {label:'Wide Action',move:'handheld follow',shot:'wide establishing',lens:'24mm wide',dur:'4',angle:'low angle dynamic'},
+    {label:'Fast Whip Cut',move:'whip pan',shot:'medium close-up',lens:'35mm f/1.8',dur:'2',angle:'eye level'},
+    {label:'Hero Moment',move:'orbit arc',shot:'low angle hero',lens:'35mm f/1.8',dur:'5',angle:'low angle'},
+    {label:'Impact Close',move:'static locked',shot:'extreme close-up',lens:'85mm f/1.4',dur:'3',angle:'extreme close'}
+  ],
+  portrait:[
+    {label:'Ambient Wide',move:'slow dolly push',shot:'wide establishing',lens:'35mm f/1.8',dur:'4',angle:'eye level'},
+    {label:'Portrait Shot',move:'static locked',shot:'medium close-up',lens:'85mm f/1.4',dur:'5',angle:'slight low angle'},
+    {label:'Orbit Around',move:'orbit arc',shot:'full body',lens:'50mm standard',dur:'5',angle:'three-quarter'},
+    {label:'Eyes Close-Up',move:'static locked',shot:'extreme close-up',lens:'135mm telephoto',dur:'4',angle:'eye level'}
+  ],
+  luxury:[
+    {label:'Product Reveal',move:'crane rise',shot:'bird\'s eye',lens:'50mm standard',dur:'4',angle:'overhead bird\'s eye'},
+    {label:'Brand Wide',move:'slow dolly push',shot:'wide establishing',lens:'24mm wide',dur:'5',angle:'eye level cinematic'},
+    {label:'Detail Shot',move:'rack focus pull',shot:'extreme close-up',lens:'85mm f/1.4',dur:'4',angle:'macro detail'},
+    {label:'Subject Pose',move:'orbit arc',shot:'full body',lens:'85mm f/1.4',dur:'5',angle:'low angle hero'}
+  ],
+  street:[
+    {label:'Street Arrive',move:'handheld follow',shot:'wide establishing',lens:'35mm f/1.8',dur:'5',angle:'eye level handheld'},
+    {label:'Walking Shot',move:'handheld follow',shot:'full body',lens:'50mm standard',dur:'5',angle:'tracking alongside'},
+    {label:'Turn & Reveal',move:'slow dolly push',shot:'medium close-up',lens:'85mm f/1.4',dur:'4',angle:'front facing'},
+    {label:'Environment',move:'static locked',shot:'wide establishing',lens:'24mm wide',dur:'4',angle:'scenic wide'}
+  ],
+  nollywood:[
+    {label:'Dramatic Enter',move:'crane rise',shot:'wide establishing',lens:'35mm f/1.8',dur:'5',angle:'overhead descend'},
+    {label:'Confrontation',move:'static locked',shot:'medium close-up',lens:'85mm f/1.4',dur:'4',angle:'eye level intense'},
+    {label:'Reaction Shot',move:'rack focus pull',shot:'extreme close-up',lens:'135mm telephoto',dur:'3',angle:'tight face'},
+    {label:'Reveal Moment',move:'slow dolly push',shot:'full body',lens:'50mm standard',dur:'5',angle:'low angle dramatic'}
+  ]
+};
+
+function loadTemplate(key){
+  document.getElementById('shotList').innerHTML='';shotCount=0;
+  shotTemplates[key].forEach(s=>addShot(s));
+  toast('✅ Template loaded!');
+}
+
+function addShot(defaults={}){
+  shotCount++;
+  const id=`shot_${shotCount}`;
+  const div=document.createElement('div');
+  div.className='shot-item';div.id=id;
+  div.innerHTML=`
+    <div class="shot-item-head" onclick="toggleShot('${id}')">
+      <div class="shot-num">${shotCount}</div>
+      <div class="shot-label">${defaults.label||'Shot '+shotCount}</div>
+      <span class="shot-type-tag">${defaults.shot||'Medium Close-Up'}</span>
+      <button class="shot-del" onclick="delShot(event,'${id}')">✕</button>
+    </div>
+    <div class="shot-body">
+      <div>
+        <label>Camera Movement</label>
+        <select class="s-move">
+          ${['slow dolly push','orbit arc','handheld follow','static locked','crane rise','dutch tilt drift','whip pan','rack focus pull'].map(o=>`<option value="${o}" ${o===defaults.move?'selected':''}>${o}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label>Shot Type</label>
+        <select class="s-shot">
+          ${['medium close-up','extreme close-up','wide establishing','over the shoulder','full body','low angle hero',"bird's eye",'dutch angle'].map(o=>`<option value="${o}" ${o===defaults.shot?'selected':''}>${o}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label>Lens</label>
+        <select class="s-lens">
+          ${['85mm f/1.4','35mm f/1.8','24mm wide','50mm standard','135mm telephoto','anamorphic 2x'].map(o=>`<option value="${o}" ${o===defaults.lens?'selected':''}>${o}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label>Duration</label>
+        <select class="s-dur">
+          ${['2','3','4','5','6','8'].map(o=>`<option value="${o}" ${o===defaults.dur?'selected':''}>${o}s</option>`).join('')}
+        </select>
+      </div>
+      <div style="grid-column:1/-1">
+        <label>Camera Angle / Notes</label>
+        <input type="text" class="s-note" value="${defaults.angle||''}" placeholder="e.g. low angle hero, eye level, overhead…">
+      </div>
+    </div>`;
+  document.getElementById('shotList').appendChild(div);
+}
+
+function toggleShot(id){
+  const body=document.querySelector(`#${id} .shot-body`);
+  body.style.display=body.style.display==='none'?'':'none';
+}
+
+function delShot(e,id){
+  e.stopPropagation();
+  document.getElementById(id).remove();
+}
+
+function getShots(){
+  return Array.from(document.querySelectorAll('.shot-item')).map((el,i)=>({
+    shot_number:i+1,
+    label:el.querySelector('.shot-label').textContent,
+    camera_movement:el.querySelector('.s-move').value,
+    shot_type:el.querySelector('.s-shot').value,
+    lens:el.querySelector('.s-lens').value,
+    duration_seconds:parseInt(el.querySelector('.s-dur').value),
+    angle_notes:el.querySelector('.s-note').value||'standard'
+  }));
+}
+
+// ── HAIKU API CALL ──
+async function callHaiku(system,userText,contentArr=null){
+  const content=contentArr||[{type:'text',text:userText}];
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-haiku-4-5-20251001',
+      max_tokens:900,
+      system,
+      messages:[{role:'user',content}]
+    })
+  });
+  const d=await res.json();
+  return d.content.map(b=>b.text||'').join('');
+}
+
+// ── SINGLE GENERATE ──
+async function generate(){
+  const scene=document.getElementById('sceneDesc').value.trim();
+  if(!imgB64&&!scene){toast('⚠️ Upload an image or describe the scene');return}
+
+  const v={
+    subject:document.getElementById('subject').value,
+    style:document.getElementById('style').value,
+    ratio:document.getElementById('ratio').value,
+    location:document.getElementById('location').value,
+    camMove:document.getElementById('camMove').value,
+    shotType:document.getElementById('shotType').value,
+    lens:document.getElementById('lens').value,
+    duration:document.getElementById('duration').value,
+    motion:document.querySelector('#tab-single input[type=range]').value,
+    grain:document.getElementById('grainSlider').value,
+    lighting:document.getElementById('lighting').value,
+    ambient:document.getElementById('ambient').value||'natural ambient',
+    dialogue:document.getElementById('dialogue').value||null,
+    music:document.getElementById('music').value,
+    negatives:document.getElementById('negatives').value,
+    palette:document.getElementById('palette').value,
+    boosters:Array.from(document.querySelectorAll('#boosters input:checked')).map(b=>b.value)
   };
+
+  startProg('progFill','progLabel','progWrap');
+  document.getElementById('ld').classList.add('on');
+  document.getElementById('ldTxt').textContent='Generating with Haiku…';
+  document.getElementById('outPh').style.display='none';
+  document.getElementById('outArea').style.display='none';
+  document.getElementById('actRow').style.display='none';
+  document.getElementById('genBtn').disabled=true;
+
+  const sys=`You are a Veo 3.1 prompt engineer for Paltrend, a Nigerian AI studio.
+Output ONLY valid JSON, no markdown, no explanation. Start { end }.
+Keys: "veo_version","prompt_id","image_analysis_summary","scene_description","subject_detail","visual_style","camera","lighting","audio","color_palette","quality_tags","negative_prompt","generation_params","paltrend_notes"
+scene_description: 3-4 cinematic sentences. paltrend_notes: 3 tips array.${imgB64?'\nImage provided — use as primary truth for subject/lighting/palette.':''}${imgAna?'\nImage analysis: '+imgAna:''}`;
+
+  const userTxt=`Scene:${scene||'use image'}\nSubject:${v.subject||'auto'}\nStyle:${v.style}\nRatio:${v.ratio}\nLocation:${v.location||'auto'}\nCamera:${v.camMove}|${v.shotType}|${v.lens}\nDuration:${v.duration}s|Motion:${v.motion}/10|Grain:${v.grain}/10\nLighting:${v.lighting}\nAmbient:${v.ambient}${v.dialogue?'\nDialogue:'+v.dialogue:''}\nMusic:${v.music}\nPalette:${v.palette}\nBoosters:${v.boosters.join(',')}\nNegatives:${v.negatives}`;
+
+  try{
+    const content=imgB64
+      ?[{type:'image',source:{type:'base64',media_type:imgType,data:imgB64}},{type:'text',text:userTxt}]
+      :[{type:'text',text:userTxt}];
+    const raw=await callHaiku(sys,null,content);
+    const clean=raw.replace(/```json|```/g,'').trim();
+    const s=clean.indexOf('{'),e=clean.lastIndexOf('}');
+    lastJSON=JSON.parse(clean.slice(s,e+1));
+    renderOut('outArea','outPh',lastJSON);
+    document.getElementById('actRow').style.display='flex';
+    document.getElementById('outMode').textContent='✅ Generated';
+  }catch{
+    lastJSON=buildFallback(v,scene);
+    renderOut('outArea','outPh',lastJSON);
+    document.getElementById('actRow').style.display='flex';
+  }finally{
+    endProg('progFill','progLabel','progWrap');
+    document.getElementById('ld').classList.remove('on');
+    document.getElementById('genBtn').disabled=false;
+  }
 }
 
-function syntaxHighlight(json) {
-  return JSON.stringify(json, null, 2)
-    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
-      if (/^"/.test(match)) {
-        if (/:$/.test(match)) return `<span class="json-key">${match}</span>`;
-        return `<span class="json-string">${match}</span>`;
-      }
-      if (/true|false/.test(match)) return `<span class="json-bool">${match}</span>`;
-      return `<span class="json-number">${match}</span>`;
-    });
+// ── MULTI GENERATE ──
+async function generateMulti(){
+  const shots=getShots();
+  if(shots.length===0){toast('⚠️ Add at least one shot');return}
+
+  const style=document.getElementById('mStyle').value;
+  const ratio=document.getElementById('mRatio').value;
+  const subject=document.getElementById('mSubject').value;
+  const palette=document.getElementById('mPalette').value;
+  const neg=document.getElementById('mNeg').value;
+  const music=document.getElementById('mMusic').value;
+  const ambient=document.getElementById('mAmbient').value||'cinematic ambience';
+  const dialogue=document.getElementById('mDialogue').value||null;
+
+  startProg('mProgFill','mProgLabel','mProgWrap');
+  document.getElementById('mLd').classList.add('on');
+  document.getElementById('mLdTxt').textContent=`Building ${shots.length}-shot sequence…`;
+  document.getElementById('mOutPh').style.display='none';
+  document.getElementById('mOutArea').style.display='none';
+  document.getElementById('mActRow').style.display='none';
+  document.getElementById('mGenBtn').disabled=true;
+
+  const sys=`You are a Veo 3.1 cinematic shot sequence engineer for Paltrend.
+Output ONLY valid JSON. Keys: "veo_version","sequence_id","sequence_title","total_shots","overall_style","subject_description","image_analysis","shots"(array),"global_audio","color_palette","negative_prompt","transition_notes","paltrend_director_notes"
+Each shot in shots array: "shot_number","shot_title","scene_description","camera_movement","shot_type","lens","duration_seconds","angle","lighting","motion_intensity","quality_tags"
+Make each shot description vivid and directorial. Ensure subject identity remains consistent across all shots.${imgB64M?'\nReference image provided — lock subject identity across all shots.':''}${imgAnaM?'\nImage: '+imgAnaM:''}`;
+
+  const userTxt=`Style:${style}|Ratio:${ratio}\nSubject:${subject||'auto from image'}\nPalette:${palette}\nMusic:${music}\nAmbient:${ambient}${dialogue?'\nDialogue:'+dialogue:''}\nNegatives:${neg}\nShots:${JSON.stringify(shots)}`;
+
+  try{
+    const content=imgB64M
+      ?[{type:'image',source:{type:'base64',media_type:imgTypeM,data:imgB64M}},{type:'text',text:userTxt}]
+      :[{type:'text',text:userTxt}];
+    const raw=await callHaiku(sys,null,content);
+    const clean=raw.replace(/```json|```/g,'').trim();
+    const s=clean.indexOf('{'),e=clean.lastIndexOf('}');
+    lastMultiJSON=JSON.parse(clean.slice(s,e+1));
+    renderOut('mOutArea','mOutPh',lastMultiJSON);
+    document.getElementById('mActRow').style.display='flex';
+    document.getElementById('mOutMode').textContent=`✅ ${shots.length} shots generated`;
+    toast(`🎬 ${shots.length}-shot sequence ready!`);
+  }catch(err){
+    lastMultiJSON={veo_version:'3.1',sequence_id:`PLT-SEQ-${Date.now()}`,sequence_title:`Paltrend ${style} Sequence`,total_shots:shots.length,overall_style:style,subject_description:subject||'cinematic subject',image_analysis:imgAnaM||'No image provided',shots:shots.map(sh=>({...sh,scene_description:`${sh.label} — ${sh.camera_movement} with ${sh.lens} lens, ${sh.shot_type} framing. Cinematic ${style} aesthetic.`,lighting:'auto from image',motion_intensity:5,quality_tags:['photorealistic skin','volumetric light','sharp focus']})),global_audio:{music_mood:music,ambient,dialogue:dialogue||null},color_palette:palette,negative_prompt:neg.split(',').map(s=>s.trim()),transition_notes:'Cut on motion for dynamic pacing. Use J-cuts for audio continuity.',paltrend_director_notes:['Keep subject face consistent across all shots using image anchor.','Vary shot sizes: wide→medium→close for cinematic rhythm.','Match cut timing to music BPM for maximum impact.']};
+    renderOut('mOutArea','mOutPh',lastMultiJSON);
+    document.getElementById('mActRow').style.display='flex';
+  }finally{
+    endProg('mProgFill','mProgLabel','mProgWrap');
+    document.getElementById('mLd').classList.remove('on');
+    document.getElementById('mGenBtn').disabled=false;
+  }
 }
 
-function renderJSON(obj) {
-  const out = document.getElementById('outputArea');
-  out.innerHTML = syntaxHighlight(obj);
-  out.style.display = 'block';
-  document.getElementById('actionRow').style.display = 'flex';
+// ── HELPERS ──
+function buildFallback(v,scene){
+  return{veo_version:'3.1',prompt_id:`PLT-${Date.now()}`,image_analysis_summary:imgAna?imgAna.slice(0,140)+'…':'Text-only mode.',scene_description:`${scene||'A cinematic scene unfolds'} in ${v.style} visual language. ${v.location||'The environment'} is bathed in ${v.lighting} that sculpts every surface with precision. The camera executes a ${v.camMove} framing a ${v.shotType} through a ${v.lens} lens across ${v.duration} seconds.`,subject_detail:{description:v.subject||'cinematic subject',skin_rendering:'photorealistic melanin-accurate',face_tracking:'consistent'},visual_style:{style:v.style,color_palette:v.palette,film_grain:parseInt(v.grain),lens:v.lens},camera:{movement:v.camMove,shot_type:v.shotType,motion_intensity:parseInt(v.motion),aspect_ratio:v.ratio},lighting:{type:v.lighting,volumetric:true},audio:{ambient:v.ambient,dialogue:v.dialogue||null,music_mood:v.music},color_palette:v.palette,quality_tags:v.boosters,negative_prompt:v.negatives.split(',').map(s=>s.trim()),generation_params:{duration_seconds:parseInt(v.duration),fps:24,resolution:'1080p'},paltrend_notes:['Use image as face-lock anchor for subject consistency.','Apply negatives strictly for melanin-accurate skin.','Enable Veo 3.1 image-conditioning for best composition fidelity.']};
 }
 
-function copyJSON() {
-  if (!lastJSON) return;
-  navigator.clipboard.writeText(JSON.stringify(lastJSON, null, 2)).then(() => showToast('✓ JSON copied!'));
+function hl(json){
+  return JSON.stringify(json,null,2).replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,m=>{
+    if(/^"/.test(m))return/:$/.test(m)?`<span class="jk">${m}</span>`:`<span class="js">${m}</span>`;
+    if(/true|false/.test(m))return`<span class="jb">${m}</span>`;
+    return`<span class="jn">${m}</span>`;
+  });
 }
 
-function copyPlainPrompt() {
-  if (!lastJSON) return;
-  const plain = `VEO 3.1 PROMPT | Paltrend\n\n${lastJSON.scene_description}\n\nCAMERA: ${JSON.stringify(lastJSON.camera)}\nLIGHTING: ${lastJSON.lighting?.type}\nAUDIO: ${lastJSON.audio?.ambient}\nSTYLE: ${lastJSON.visual_style?.style}\nQUALITY: ${(lastJSON.quality_tags||[]).join(', ')}\nNEGATIVES: ${(lastJSON.negative_prompt||[]).join(', ')}`;
-  navigator.clipboard.writeText(plain).then(() => showToast('✓ Plain prompt copied!'));
+function renderOut(areaId,phId,obj){
+  const el=document.getElementById(areaId);
+  el.innerHTML=hl(obj);el.style.display='block';
+  document.getElementById(phId).style.display='none';
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function resetAll() {
-  document.getElementById('sceneDesc').value = '';
-  document.getElementById('subject').value = '';
-  document.getElementById('location').value = '';
-  document.getElementById('ambient').value = '';
-  document.getElementById('dialogue').value = '';
-  document.getElementById('outputArea').style.display = 'none';
-  document.getElementById('placeholder').style.display = 'block';
-  document.getElementById('actionRow').style.display = 'none';
-  lastJSON = null;
+function copyJSON(){if(!lastJSON)return;navigator.clipboard.writeText(JSON.stringify(lastJSON,null,2)).then(()=>toast('✓ JSON copied!'))}
+function copyPlain(){
+  if(!lastJSON)return;
+  const t=`VEO 3.1 PROMPT | Paltrend\n\n${lastJSON.scene_description}\n\nCAMERA: ${JSON.stringify(lastJSON.camera)}\nLIGHTING: ${lastJSON.lighting?.type}\nAUDIO: ${lastJSON.audio?.ambient}\nSTYLE: ${lastJSON.visual_style?.style}\nQUALITY: ${(lastJSON.quality_tags||[]).join(', ')}\nNEGATIVES: ${(lastJSON.negative_prompt||[]).join(', ')}\n\nPALTREND NOTES:\n${(lastJSON.paltrend_notes||[]).map((n,i)=>`${i+1}. ${n}`).join('\n')}`;
+  navigator.clipboard.writeText(t).then(()=>toast('✓ Plain prompt copied!'));
+}
+function downloadJSON(){
+  if(!lastJSON)return;
+  const a=document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(lastJSON,null,2));
+  a.download=`paltrend-veo3-prompt-${Date.now()}.json`;a.click();
+  toast('⬇ Downloading…');
+}
+function copyMultiJSON(){if(!lastMultiJSON)return;navigator.clipboard.writeText(JSON.stringify(lastMultiJSON,null,2)).then(()=>toast('✓ Sequence JSON copied!'))}
+function downloadMultiJSON(){
+  if(!lastMultiJSON)return;
+  const a=document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(lastMultiJSON,null,2));
+  a.download=`paltrend-sequence-${Date.now()}.json`;a.click();
+  toast('⬇ Downloading…');
+}
+function resetAll(){
+  rmImg({stopPropagation:()=>{}});
+  ['sceneDesc','subject','location','ambient','dialogue'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
+  document.getElementById('outArea').style.display='none';
+  document.getElementById('outPh').style.display='block';
+  document.getElementById('actRow').style.display='none';
+  document.getElementById('outMode').textContent='Ready';
+  lastJSON=null;toast('↺ Reset');
+}
+function resetMulti(){
+  rmImgM({stopPropagation:()=>{}});
+  document.getElementById('shotList').innerHTML='';shotCount=0;
+  document.getElementById('mOutArea').style.display='none';
+  document.getElementById('mOutPh').style.display='block';
+  document.getElementById('mActRow').style.display='none';
+  lastMultiJSON=null;toast('↺ Reset');
+}
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2500);
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2400);
-}
+// Init with 3 default shots on multi tab
+loadTemplate('reveal');
 </script>
 </body>
 </html>
