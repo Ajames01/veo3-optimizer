@@ -963,6 +963,7 @@ Make each shot description vivid and directorial. Ensure subject identity remain
   const userTxt=`Style:${style}|Ratio:${ratio}\nSubject:${subject||'auto from image'}\nPalette:${palette}\nMusic:${music}\nAmbient:${ambient}${dialogue?'\nDialogue:'+dialogue:''}\nNegatives:${neg}\nShots:${JSON.stringify(shots)}`;
 
   try{
+// Them no dey teach this one for school o 
     const content=imgB64M
       ?[{type:'image',source:{type:'base64',media_type:imgTypeM,data:imgB64M}},{type:'text',text:userTxt}]
       :[{type:'text',text:userTxt}];
